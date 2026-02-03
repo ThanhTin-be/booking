@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'views/splash/splash_screen.dart';
 import 'views/auth/login_screen.dart';
 import 'views/auth/register_screen.dart';
+import 'views/auth/forgot_password_screen.dart';
 import 'views/main_wrapper.dart';
+import 'views/admin/admin_dashboard_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -47,7 +49,9 @@ class MyApp extends StatelessWidget {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/forgot-password': (context) => const ForgotPasswordScreen(),
         '/home': (context) => const MainWrapper(),
+        '/admin': (context) => const AdminDashboardScreen(),
       },
     );
   }

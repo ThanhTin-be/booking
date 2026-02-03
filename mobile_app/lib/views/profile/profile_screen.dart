@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import '../booking/my_bookings_screen.dart'; // Import trang vé của tôi
+import 'edit_profile_screen.dart'; // Import trang chỉnh sửa
+import 'transaction_history_screen.dart'; // Import trang lịch sử giao dịch
+import 'payment_management_screen.dart'; // Import trang quản lý thanh toán
+import 'my_offers_screen.dart'; // Import trang ưu đãi của tôi
+import 'badminton_score_screen.dart'; // Import trang tính điểm
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -11,7 +16,7 @@ class ProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // --- HEADER (Giữ nguyên như cũ) ---
+            // --- HEADER ---
             Stack(
               clipBehavior: Clip.none,
               alignment: Alignment.topCenter,
@@ -55,7 +60,15 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      IconButton(onPressed: (){}, icon: const Icon(Icons.edit_square, color: Colors.white70, size: 20))
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                          );
+                        },
+                        icon: const Icon(Icons.edit_square, color: Colors.white70, size: 20),
+                      )
                     ],
                   ),
                 ),
@@ -94,21 +107,33 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- MỤC QUẢN LÝ ĐẶT SÂN (Thêm mới) ---
                   const Text("Quản lý", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
                   const SizedBox(height: 10),
 
-                  // Nút VÉ CỦA TÔI (Quan trọng nhất, đưa lên đầu)
                   _buildMenuItem(
                     icon: Icons.confirmation_number_outlined,
                     title: "Vé của tôi",
-                    badge: "1", // Ví dụ có 1 vé sắp tới
-                    iconColor: Colors.orange, // Màu icon khác biệt chút cho nổi
+                    badge: "1",
+                    iconColor: Colors.orange,
                     onTap: () {
-                      // Chuyển sang màn hình MyBookingsScreen
                       Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const MyBookingsScreen())
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+                  const Text("Công cụ thể thao", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                  const SizedBox(height: 10),
+                  _buildMenuItem(
+                    icon: Icons.scoreboard_outlined,
+                    title: "Tính điểm Cầu lông",
+                    iconColor: Colors.green,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const BadmintonScoreScreen()),
                       );
                     },
                   ),
@@ -119,17 +144,32 @@ class ProfileScreen extends StatelessWidget {
                   _buildMenuItem(
                     icon: Icons.person_outline,
                     title: "Chỉnh sửa thông tin",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                      );
+                    },
                   ),
                   _buildMenuItem(
                     icon: Icons.account_balance_wallet_outlined,
                     title: "Quản lý thanh toán",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const PaymentManagementScreen()),
+                      );
+                    },
                   ),
                   _buildMenuItem(
                     icon: Icons.history,
                     title: "Lịch sử giao dịch",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TransactionHistoryScreen()),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 20),
@@ -139,7 +179,12 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.card_giftcard,
                     title: "Ưu đãi của tôi",
                     badge: "3",
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MyOffersScreen()),
+                      );
+                    },
                   ),
                   _buildMenuItem(
                     icon: Icons.group_add_outlined,
@@ -189,7 +234,7 @@ class ProfileScreen extends StatelessWidget {
     required IconData icon,
     required String title,
     String? badge,
-    Color iconColor = const Color(0xFF2962FF), // Mặc định là xanh
+    Color iconColor = const Color(0xFF2962FF),
     required VoidCallback onTap,
   }) {
     return Container(

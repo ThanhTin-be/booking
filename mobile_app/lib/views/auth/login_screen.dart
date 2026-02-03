@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/custom_text_field.dart'; // Import widget dùng chung
+import '../../widgets/custom_text_field.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -7,78 +7,140 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.lock_person, size: 80, color: Colors.blue),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Xin chào!",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                  ),
-                  const Text("Đăng nhập để tiếp tục"),
-                  const SizedBox(height: 40),
-
-                  // Form nhập liệu
-                  const CustomTextField(
-                    label: "Email",
-                    icon: Icons.email_outlined,
-                  ),
-                  const CustomTextField(
-                    label: "Mật khẩu",
-                    icon: Icons.lock_outlined,
-                    isPassword: true,
-                  ),
-
-                  // Quên mật khẩu
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text("Quên mật khẩu?"),
+      // 1. Dùng Gradient làm nền để UI trông cao cấp hơn
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // 2. Icon với Shadow
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.withOpacity(0.1),
+                            blurRadius: 20,
+                            spreadRadius: 5,
+                          )
+                        ],
+                      ),
+                      child: const Icon(Icons.lock_person_rounded, size: 80, color: Colors.blueAccent),
                     ),
-                  ),
+                    const SizedBox(height: 30),
 
-                  const SizedBox(height: 20),
+                    const Text(
+                      "Chào mừng trở lại!",
+                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text("Đăng nhập để bắt đầu đặt sân nhé", style: TextStyle(color: Colors.grey)),
+                    const SizedBox(height: 40),
 
-                  // Nút Đăng nhập
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/home');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    // Form nhập liệu
+                    const CustomTextField(
+                      label: "Email",
+                      icon: Icons.email_outlined,
+                    ),
+                    const SizedBox(height: 16),
+                    const CustomTextField(
+                      label: "Mật khẩu",
+                      icon: Icons.lock_outline_rounded,
+                      isPassword: true,
+                    ),
+
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const Text("Quên mật khẩu?", style: TextStyle(color: Colors.blueAccent)),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 3. Nút Đăng nhập kiểu Gradient (Ghi điểm UI)
+                    Container(
+                      width: double.infinity,
+                      height: 55,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        gradient: const LinearGradient(
+                          colors: [Colors.blue, Colors.blueAccent],
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.blue.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          )
+                        ],
                       ),
-                      child: const Text("Đăng nhập", style: TextStyle(fontSize: 18)),
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        ),
+                        child: const Text("ĐĂNG NHẬP", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 25),
 
-                  // Chuyển sang trang đăng ký
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Chưa có tài khoản?"),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/register');
-                        },
-                        child: const Text("Đăng ký ngay"),
+                    // 4. Social Login (Tính năng thực tế)
+                    const Row(
+                      children: [
+                        Expanded(child: Divider()),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          child: Text("Hoặc", style: TextStyle(color: Colors.grey)),
+                        ),
+                        Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Nút Admin được làm tinh tế hơn
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.pushNamed(context, '/admin'),
+                      icon: const Icon(Icons.admin_panel_settings_outlined),
+                      label: const Text("Truy cập quyền Quản trị viên"),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.indigo,
+                        side: const BorderSide(color: Colors.indigo),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    // Chuyển sang trang đăng ký
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text("Bạn mới biết đến app?"),
+                        TextButton(
+                          onPressed: () => Navigator.pushNamed(context, '/register'),
+                          child: const Text("Đăng ký ngay", style: TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

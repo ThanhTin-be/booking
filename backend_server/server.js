@@ -21,6 +21,9 @@ app.get('/', (req, res) => {
     res.send('API đang chạy ngon lành!');
 });
 
+// 5.1. API routes
+app.use('/api/auth', require('./api/auth'));
+
 // 6. Chạy Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

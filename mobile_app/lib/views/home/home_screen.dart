@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../widgets/court_card.dart';
 import '../booking/booking_screen.dart';
+import 'notifications_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -86,7 +88,12 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.favorite_border, color: Colors.white),

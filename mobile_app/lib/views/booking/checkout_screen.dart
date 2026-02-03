@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'qr_payment_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final String courtName;
@@ -243,8 +244,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Xử lý thanh toán -> Chuyển sang trang Success
-                    _showSuccessDialog();
+                    if (_selectedPaymentMethod == 1 || _selectedPaymentMethod == 2) {
+                      // Nếu chọn Chuyển khoản hoặc MoMo -> Sang trang quét mã QR
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QRPaymentScreen(
+                            paymentMethod: _selectedPaymentMethod == 2 ? "MoMo" : "Bank",
+                            amount: widget.totalPrice,
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Nếu chọn tiền mặt -> Hiện dialog thành công luôn
+                      _showSuccessDialog();
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber[700],
