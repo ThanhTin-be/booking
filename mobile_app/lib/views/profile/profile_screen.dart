@@ -1,220 +1,206 @@
 import 'package:flutter/material.dart';
-import '../booking/my_bookings_screen.dart'; // Import trang vé của tôi
-import 'edit_profile_screen.dart'; // Import trang chỉnh sửa
-import 'transaction_history_screen.dart'; // Import trang lịch sử giao dịch
-import 'payment_management_screen.dart'; // Import trang quản lý thanh toán
-import 'my_offers_screen.dart'; // Import trang ưu đãi của tôi
-import 'badminton_score_screen.dart'; // Import trang tính điểm
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
+import '../booking/my_bookings_screen.dart';
+import 'edit_profile_screen.dart';
+import 'transaction_history_screen.dart';
+import 'payment_management_screen.dart';
+import 'my_offers_screen.dart';
+import 'badminton_score_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final AuthController authController = Get.find<AuthController>();
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // --- HEADER ---
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.topCenter,
-              children: [
-                Container(
-                  height: 220,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Color(0xFF2962FF), Color(0xFF00B0FF)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.vertical(bottom: Radius.elliptical(400, 60)),
-                  ),
-                ),
-                Positioned(
-                  top: 70,
-                  left: 24,
-                  right: 24,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), shape: BoxShape.circle),
-                        child: const CircleAvatar(
-                          radius: 35,
-                          backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=12"),
-                          backgroundColor: Colors.white,
-                        ),
+      body: Obx(() {
+        final user = authController.user;
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              // --- HEADER ---
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    height: 220,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF2962FF), Color(0xFF00B0FF)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text("Thanh Tín", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                            SizedBox(height: 4),
-                            Text("0909 123 456", style: TextStyle(color: Colors.white70, fontSize: 14)),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const EditProfileScreen()),
-                          );
-                        },
-                        icon: const Icon(Icons.edit_square, color: Colors.white70, size: 20),
-                      )
-                    ],
-                  ),
-                ),
-                // Stats Card
-                Positioned(
-                  bottom: -40,
-                  left: 20,
-                  right: 20,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 5))],
+                      borderRadius: BorderRadius.vertical(bottom: Radius.elliptical(400, 60)),
                     ),
+                  ),
+                  Positioned(
+                    top: 70,
+                    left: 24,
+                    right: 24,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _buildStatItem("Số dư ví", "500k", Colors.blue),
-                        _buildDivider(),
-                        _buildStatItem("Điểm thưởng", "1.2k", Colors.orange),
-                        _buildDivider(),
-                        _buildStatItem("Hạng", "Vàng", Colors.amber),
+                        Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), shape: BoxShape.circle),
+                          child: CircleAvatar(
+                            radius: 35,
+                            backgroundImage: NetworkImage(user['avatar'] != null && user['avatar'].isNotEmpty 
+                                ? user['avatar'] 
+                                : "https://ui-avatars.com/api/?name=${user['fullName'] ?? 'User'}&background=random"),
+                            backgroundColor: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(user['fullName'] ?? "Khách", style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 4),
+                              Text(user['phone'] ?? user['email'] ?? "Chưa có thông tin", style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Get.to(() => const EditProfileScreen());
+                          },
+                          icon: const Icon(Icons.edit_square, color: Colors.white70, size: 20),
+                        )
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 60),
-
-            // --- MENU CHỨC NĂNG ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Quản lý", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                  const SizedBox(height: 10),
-
-                  _buildMenuItem(
-                    icon: Icons.confirmation_number_outlined,
-                    title: "Vé của tôi",
-                    badge: "1",
-                    iconColor: Colors.orange,
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const MyBookingsScreen())
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-                  const Text("Công cụ thể thao", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                  const SizedBox(height: 10),
-                  _buildMenuItem(
-                    icon: Icons.scoreboard_outlined,
-                    title: "Tính điểm Cầu lông",
-                    iconColor: Colors.green,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const BadmintonScoreScreen()),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-                  const Text("Tài khoản", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                  const SizedBox(height: 10),
-                  _buildMenuItem(
-                    icon: Icons.person_outline,
-                    title: "Chỉnh sửa thông tin",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const EditProfileScreen()),
-                      );
-                    },
-                  ),
-                  _buildMenuItem(
-                    icon: Icons.account_balance_wallet_outlined,
-                    title: "Quản lý thanh toán",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const PaymentManagementScreen()),
-                      );
-                    },
-                  ),
-                  _buildMenuItem(
-                    icon: Icons.history,
-                    title: "Lịch sử giao dịch",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const TransactionHistoryScreen()),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-                  const Text("Tiện ích", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                  const SizedBox(height: 10),
-                  _buildMenuItem(
-                    icon: Icons.card_giftcard,
-                    title: "Ưu đãi của tôi",
-                    badge: "3",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const MyOffersScreen()),
-                      );
-                    },
-                  ),
-                  _buildMenuItem(
-                    icon: Icons.group_add_outlined,
-                    title: "Mời bạn bè",
-                    onTap: () {},
-                  ),
-
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        side: const BorderSide(color: Colors.redAccent),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        foregroundColor: Colors.redAccent,
+                  // Stats Card
+                  Positioned(
+                    bottom: -40,
+                    left: 20,
+                    right: 20,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 5))],
                       ),
-                      child: const Text("Đăng xuất", style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildStatItem("Số dư ví", "0đ", Colors.blue),
+                          _buildDivider(),
+                          _buildStatItem("Điểm thưởng", "0", Colors.orange),
+                          _buildDivider(),
+                          _buildStatItem("Hạng", user['role'] == 'admin' ? 'Admin' : 'Thành viên', Colors.amber),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 30),
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
+
+              const SizedBox(height: 60),
+
+              // --- MENU CHỨC NĂNG ---
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Quản lý", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const SizedBox(height: 10),
+
+                    _buildMenuItem(
+                      icon: Icons.confirmation_number_outlined,
+                      title: "Vé của tôi",
+                      iconColor: Colors.orange,
+                      onTap: () {
+                        Get.to(() => const MyBookingsScreen());
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+                    const Text("Công cụ thể thao", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const SizedBox(height: 10),
+                    _buildMenuItem(
+                      icon: Icons.scoreboard_outlined,
+                      title: "Tính điểm Cầu lông",
+                      iconColor: Colors.green,
+                      onTap: () {
+                        Get.to(() => const BadmintonScoreScreen());
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+                    const Text("Tài khoản", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const SizedBox(height: 10),
+                    _buildMenuItem(
+                      icon: Icons.person_outline,
+                      title: "Chỉnh sửa thông tin",
+                      onTap: () {
+                        Get.to(() => const EditProfileScreen());
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.account_balance_wallet_outlined,
+                      title: "Quản lý thanh toán",
+                      onTap: () {
+                        Get.to(() => const PaymentManagementScreen());
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.history,
+                      title: "Lịch sử giao dịch",
+                      onTap: () {
+                        Get.to(() => const TransactionHistoryScreen());
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+                    const Text("Tiện ích", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const SizedBox(height: 10),
+                    _buildMenuItem(
+                      icon: Icons.card_giftcard,
+                      title: "Ưu đãi của tôi",
+                      onTap: () {
+                        Get.to(() => const MyOffersScreen());
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.group_add_outlined,
+                      title: "Mời bạn bè",
+                      onTap: () {},
+                    ),
+
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          authController.logout();
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          side: const BorderSide(color: Colors.redAccent),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          foregroundColor: Colors.redAccent,
+                        ),
+                        child: const Text("Đăng xuất", style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 

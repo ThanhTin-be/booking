@@ -1,0 +1,588 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Booking API",
+    "description": "API để quản lý đặt sân và xác thực người dùng",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Development Team",
+      "email": "dev@booking.com"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Development Server"
+    },
+    {
+      "url": "https://api.booking.com",
+      "description": "Production Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "API xác thực người dùng (Đăng ký, Đăng nhập, Đăng xuất)"
+    }
+  ],
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Đăng ký tài khoản mới",
+        "description": "Tạo tài khoản người dùng mới với email và mật khẩu",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "example": {
+                "fullName": "Nguyễn Văn A",
+                "email": "user@example.com",
+                "password": "password123",
+                "confirmPassword": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Đăng ký thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                },
+                "example": {
+                  "message": "Đăng ký thành công",
+                  "user": {
+                    "id": "64a5f3c1d7e9a2b3c4d5e6f7",
+                    "fullName": "Nguyễn Văn A",
+                    "email": "user@example.com",
+                    "role": "customer"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Lỗi validation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "missing_fields": {
+                    "value": {
+                      "message": "Vui lòng điền đầy đủ thông tin"
+                    }
+                  },
+                  "password_mismatch": {
+                    "value": {
+                      "message": "Mật khẩu không khớp"
+                    }
+                  },
+                  "email_exists": {
+                    "value": {
+                      "message": "Email đã được đăng ký"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Đăng nhập",
+        "description": "Xác thực và lấy JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "example": {
+                "email": "user@example.com",
+                "password": "password123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "example": {
+                  "message": "Đăng nhập thành công",
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YTVmM2MxZDdlOWEyYjNjNGQ1ZTZmNyIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsImZ1bGxOYW1lIjoiTmd1eW7Cm4duow6jxaog1VGFuIEEiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3Mzk2OTczOTEsImV4cCI6MTc0MDMwMjE5MX0.abc123",
+                  "user": {
+                    "id": "64a5f3c1d7e9a2b3c4d5e6f7",
+                    "fullName": "Nguyễn Văn A",
+                    "email": "user@example.com",
+                    "role": "customer"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Vui lòng nhập email và mật khẩu"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Thông tin đăng nhập không đúng",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "message": "Email hoặc mật khẩu không đúng"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Lấy thông tin người dùng hiện tại",
+        "description": "Lấy thông tin user đang đăng nhập (yêu cầu JWT token)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy thông tin thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetMeResponse"
+                },
+                "example": {
+                  "message": "Lấy thông tin thành công",
+                  "user": {
+                    "_id": "64a5f3c1d7e9a2b3c4d5e6f7",
+                    "fullName": "Nguyễn Văn A",
+                    "email": "user@example.com",
+                    "role": "customer",
+                    "avatar": "",
+                    "phone": "",
+                    "createdAt": "2026-02-04T10:30:00.000Z",
+                    "updatedAt": "2026-02-04T10:30:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Không có token hoặc token không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "no_token": {
+                    "value": {
+                      "message": "Không có token, vui lòng đăng nhập"
+                    }
+                  },
+                  "invalid_token": {
+                    "value": {
+                      "message": "Token không hợp lệ hoặc đã hết hạn"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Đăng xuất",
+        "description": "Đăng xuất và xóa session (yêu cầu JWT token)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đăng xuất thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponse"
+                },
+                "example": {
+                  "message": "Đăng xuất thành công"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Không có token hoặc token không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Token không hợp lệ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify-email": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Xác thực email bằng mã OTP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "user@gmail.com" },
+                  "code": { "type": "string", "example": "123456" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Xác thực thành công" },
+          "400": { "description": "Mã không đúng hoặc hết hạn" }
+        }
+      }
+    },
+    "/api/auth/resend-code": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Gửi lại mã xác thực OTP",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "user@gmail.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đã gửi lại mã thành công" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["fullName", "email", "password", "confirmPassword"],
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "Họ tên đầy đủ",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email (phải là unique)",
+            "example": "user"
+          },
+          "password": {
+            "type": "string",
+            "description": "Mật khẩu (tối thiểu 6 ký tự)",
+            "example": "password123"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "description": "Xác nhận mật khẩu (phải khớp với password)",
+            "example": "password123"
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Đăng ký thành công"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "MongoDB ObjectId",
+                "example": "64a5f3c1d7e9a2b3c4d5e6f7"
+              },
+              "fullName": {
+                "type": "string",
+                "example": "Nguyễn Văn A"
+              },
+              "email": {
+                "type": "string",
+                "example": "user@example.com"
+              },
+              "role": {
+                "type": "string",
+                "enum": ["customer", "admin"],
+                "example": "customer"
+              }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email đăng ký",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Mật khẩu",
+            "example": "password123"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Đăng nhập thành công"
+          },
+          "token": {
+            "type": "string",
+            "description": "JWT Token (hết hạn sau 7 ngày)",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "64a5f3c1d7e9a2b3c4d5e6f7"
+              },
+              "fullName": {
+                "type": "string",
+                "example": "Nguyễn Văn A"
+              },
+              "email": {
+                "type": "string",
+                "example": "user@example.com"
+              },
+              "role": {
+                "type": "string",
+                "enum": ["customer", "admin"],
+                "example": "customer"
+              }
+            }
+          }
+        }
+      },
+      "GetMeResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Lấy thông tin thành công"
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        }
+      },
+      "LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Đăng xuất thành công"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "MongoDB ObjectId",
+            "example": "64a5f3c1d7e9a2b3c4d5e6f7"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["customer", "admin"],
+            "example": "customer"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "URL ảnh đại diện",
+            "example": ""
+          },
+          "phone": {
+            "type": "string",
+            "description": "Số điện thoại",
+            "example": ""
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Thời gian tạo",
+            "example": "2026-02-04T10:30:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Thời gian cập nhật",
+            "example": "2026-02-04T10:30:00.000Z"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mô tả lỗi"
+          },
+          "error": {
+            "type": "string",
+            "description": "Chi tiết lỗi (nếu có)"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT Token nhận từ /api/auth/login"
+      }
+    }
+  }
+}

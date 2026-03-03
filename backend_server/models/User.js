@@ -7,6 +7,10 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
     avatar: { type: String, default: '' },
     phone: { type: String, default: '' },
+    // Email verification
+    emailVerified: { type: Boolean, default: false },
+    verificationCode: { type: String, default: null }, // Mã xác thực
+    verificationCodeExpires: { type: Date, default: null }, // Hết hạn mã xác thực
     // Dùng để quản lý Refresh Token (Công nghệ mới để bảo mật mobile)
     refreshTokens: [{ type: String }],
 }, { timestamps: true });

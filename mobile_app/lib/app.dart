@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'views/splash/splash_screen.dart';
 import 'views/auth/login_screen.dart';
 import 'views/auth/register_screen.dart';
 import 'views/auth/forgot_password_screen.dart';
+import 'views/auth/verify_code_screen.dart';
 import 'views/main_wrapper.dart';
 import 'views/admin/admin_dashboard_screen.dart';
 
@@ -11,23 +13,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Badminton Booking',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        // Tông màu chủ đạo: Xanh thể thao (Royal Blue)
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2962FF), // Màu xanh đậm, rực rỡ
+          seedColor: const Color(0xFF2962FF),
           primary: const Color(0xFF2962FF),
-          secondary: const Color(0xFF00B0FF), // Xanh nhạt hơn cho điểm nhấn
+          secondary: const Color(0xFF00B0FF),
         ),
-        scaffoldBackgroundColor: Colors.grey[50], // Nền xám rất nhạt để làm nổi nội dung
-
-        // Cấu hình mặc định cho thanh điều hướng dưới đáy
+        scaffoldBackgroundColor: Colors.grey[50],
         navigationBarTheme: NavigationBarThemeData(
           backgroundColor: Colors.white,
-          indicatorColor: const Color(0xFF2962FF).withOpacity(0.1), // Màu nền nút khi chọn (Xanh nhạt)
+          indicatorColor: const Color(0xFF2962FF).withOpacity(0.1),
           labelTextStyle: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.selected)) {
               return const TextStyle(
@@ -45,14 +44,18 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/forgot-password': (context) => const ForgotPasswordScreen(),
-        '/home': (context) => const MainWrapper(),
-        '/admin': (context) => const AdminDashboardScreen(),
-      },
+      getPages: [
+        GetPage(name: '/', page: () => const SplashScreen()),
+        GetPage(name: '/login', page: () => LoginScreen()),
+        GetPage(name: '/register', page: () => RegisterScreen()),
+        GetPage(name: '/forgot-password', page: () => const ForgotPasswordScreen()),
+        GetPage(
+          name: '/verify-code', 
+          page: () => VerifyCodeScreen(email: Get.arguments ?? ''),
+        ),
+        GetPage(name: '/home', page: () => const MainWrapper()),
+        GetPage(name: '/admin', page: () => const AdminDashboardScreen()),
+      ],
     );
   }
 }

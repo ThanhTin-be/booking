@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
 import '../../widgets/custom_text_field.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
+
+  final AuthController _authController = Get.put(AuthController());
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 1. Dùng Gradient làm nền để UI trông cao cấp hơn
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -23,7 +28,6 @@ class LoginScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    // 2. Icon với Shadow
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -49,16 +53,17 @@ class LoginScreen extends StatelessWidget {
                     const Text("Đăng nhập để bắt đầu đặt sân nhé", style: TextStyle(color: Colors.grey)),
                     const SizedBox(height: 40),
 
-                    // Form nhập liệu
-                    const CustomTextField(
+                    CustomTextField(
                       label: "Email",
                       icon: Icons.email_outlined,
+                      controller: _emailController,
                     ),
                     const SizedBox(height: 16),
-                    const CustomTextField(
+                    CustomTextField(
                       label: "Mật khẩu",
                       icon: Icons.lock_outline_rounded,
                       isPassword: true,
+                      controller: _passwordController,
                     ),
 
                     Align(
@@ -70,8 +75,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // 3. Nút Đăng nhập kiểu Gradient (Ghi điểm UI)
-                    Container(
+                    Obx(() => Container(
                       width: double.infinity,
                       height: 55,
                       decoration: BoxDecoration(
@@ -88,19 +92,22 @@ class LoginScreen extends StatelessWidget {
                         ],
                       ),
                       child: ElevatedButton(
-                        onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+                        onPressed: _authController.isLoading.value 
+                          ? null 
+                          : () => _authController.login(_emailController.text, _passwordController.text),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                         ),
-                        child: const Text("ĐĂNG NHẬP", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                        child: _authController.isLoading.value 
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text("ĐĂNG NHẬP", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                       ),
-                    ),
+                    )),
 
                     const SizedBox(height: 25),
 
-                    // 4. Social Login (Tính năng thực tế)
                     const Row(
                       children: [
                         Expanded(child: Divider()),
@@ -113,9 +120,8 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // Nút Admin được làm tinh tế hơn
                     OutlinedButton.icon(
-                      onPressed: () => Navigator.pushNamed(context, '/admin'),
+                      onPressed: () => Get.toNamed('/admin'),
                       icon: const Icon(Icons.admin_panel_settings_outlined),
                       label: const Text("Truy cập quyền Quản trị viên"),
                       style: OutlinedButton.styleFrom(
@@ -128,13 +134,12 @@ class LoginScreen extends StatelessWidget {
 
                     const SizedBox(height: 30),
 
-                    // Chuyển sang trang đăng ký
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Bạn mới biết đến app?"),
                         TextButton(
-                          onPressed: () => Navigator.pushNamed(context, '/register'),
+                          onPressed: () => Get.toNamed('/register'),
                           child: const Text("Đăng ký ngay", style: TextStyle(fontWeight: FontWeight.bold)),
                         ),
                       ],

@@ -5,32 +5,46 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a696a68-d618-4bc0-bb87-ef04a44b027d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/admin/admin_dashboard_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/admin/discount_management_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/admin/revenue_report_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/admin/user_management_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/auth/forgot_password_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/booking/qr_payment_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/home/notifications_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/badminton_score_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/edit_profile_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/my_offers_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/payment_management_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/transaction_history_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/deviceManager.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/config/config.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/auth_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/services/auth_service.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/views/auth/verify_code_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_server/.env" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/.bin/nodemon" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/.bin/nodemon" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/api/seedUsers.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/api/seedUsers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/models/User.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/.bin/bcrypt" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/.bin/bcrypt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_server/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/bin/bcrypt" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/bin/bcrypt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/index.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/index.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/types.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/types.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/index.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/index.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/types.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/bcryptjs/umd/types.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/cors/CONTRIBUTING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/cors/HISTORY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/cors/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/cors/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/cors/lib/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/cors/lib/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/cors/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/cors/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_server/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_app/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/android/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile_app/lib/app.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/app.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/auth/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/auth/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/booking/checkout_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/booking/checkout_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/home/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/home/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/auth/register_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/auth/register_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/profile/profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/splash/splash_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/splash/splash_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile_app/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile_app/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/pubspec.yaml" afterDir="false" />
     </list>
@@ -61,7 +75,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/ThanhTin-be/booking.git&quot;,
-    &quot;accountId&quot;: &quot;6be5ed85-b084-45b3-a461-4ea8c716c4fa&quot;
+    &quot;accountId&quot;: &quot;a8e71d43-5c7f-454c-b1fd-de53a2d402d3&quot;
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -85,6 +99,7 @@
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
@@ -116,5 +131,16 @@
       <updated>1768741067931</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

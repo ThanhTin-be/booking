@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Chuyển sang màn hình Login (Dùng pushReplacement để không back lại được Splash)
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      MaterialPageRoute(builder: (context) => LoginScreen()),
     );
   }
 
