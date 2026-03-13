@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/wishlist_controller.dart';
 import '../../widgets/court_card.dart';
 import '../booking/booking_screen.dart';
@@ -12,13 +13,44 @@ class WishlistScreen extends StatelessWidget {
     final WishlistController controller = Get.put(WishlistController());
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text("Sân đã lưu", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
+      backgroundColor: const Color(0xFFF8F9FE),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(120),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1E56D9), Color(0xFF00C2FF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Sân yêu thích ❤️",
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Obx(() => Text(
+                    "${controller.courts.length} sân đã lưu",
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                  )),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
       body: Obx(() {
         if (controller.isLoading.value && controller.courts.isEmpty) {
@@ -30,7 +62,7 @@ class WishlistScreen extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () => controller.fetchWishlist(),
           child: ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
             itemCount: controller.courts.length,
             itemBuilder: (context, index) {
               final court = controller.courts[index];
@@ -73,14 +105,33 @@ class WishlistScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(30),
-            decoration: BoxDecoration(color: Colors.grey[200], shape: BoxShape.circle),
-            child: Icon(Icons.favorite_border_rounded, size: 80, color: Colors.grey[400]),
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.redAccent.withOpacity(0.08),
+                  Colors.pinkAccent.withOpacity(0.05),
+                ],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.favorite_border_rounded, size: 72, color: Colors.redAccent.withOpacity(0.5)),
           ),
-          const SizedBox(height: 20),
-          const Text("Chưa có sân yêu thích", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          const Text("Hãy thả tim các sân bạn quan tâm\nđể xem lại tại đây nhé!", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+          const SizedBox(height: 24),
+          Text(
+            "Chưa có sân yêu thích",
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Hãy thả tim các sân bạn quan tâm\nđể xem lại tại đây nhé!",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 14, height: 1.6),
+          ),
         ],
       ),
     );

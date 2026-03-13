@@ -1,8 +1,9 @@
 import 'package:booking/views/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'home/home_screen.dart';
 import 'wishlist/wishlist_screen.dart';
-// Widget placeholder giữ nguyên
+
 class PlaceholderPage extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -16,15 +17,32 @@ class PlaceholderPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              gradient: LinearGradient(
+                colors: [
+                  const Color(0xFF1E56D9).withOpacity(0.08),
+                  const Color(0xFF00C2FF).withOpacity(0.08),
+                ],
+              ),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 60, color: Theme.of(context).primaryColor),
+            child: Icon(icon, size: 60, color: const Color(0xFF1E56D9)),
           ),
-          const SizedBox(height: 16),
-          Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)),
+          const SizedBox(height: 20),
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Tính năng đang được phát triển",
+            style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey),
+          ),
         ],
       ),
     );
@@ -45,7 +63,7 @@ class _MainWrapperState extends State<MainWrapper> {
     const HomeScreen(),
     const PlaceholderPage(title: "Bản đồ sân", icon: Icons.map_rounded),
     const WishlistScreen(),
-    const ProfileScreen()
+    const ProfileScreen(),
   ];
 
   @override
@@ -53,45 +71,43 @@ class _MainWrapperState extends State<MainWrapper> {
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(
-        // Thêm bóng mờ (Shadow) phía trên thanh điều hướng để tạo chiều sâu
         decoration: BoxDecoration(
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
             ),
           ],
         ),
         child: NavigationBar(
-          height: 70, // Chiều cao vừa phải, khỏe khoắn
+          height: 68,
           elevation: 0,
+          backgroundColor: Colors.white,
           selectedIndex: _currentIndex,
-          onDestinationSelected: (int index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          animationDuration: const Duration(milliseconds: 600), // Hiệu ứng chuyển mượt mà
-          destinations: const [
+          onDestinationSelected: (int index) => setState(() => _currentIndex = index),
+          animationDuration: const Duration(milliseconds: 500),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home_rounded, color: Color(0xFF2962FF)), // Icon đậm khi chọn
+              icon: const Icon(Icons.home_outlined, size: 26),
+              selectedIcon: const Icon(Icons.home_rounded, color: Color(0xFF1E56D9), size: 26),
               label: 'Trang chủ',
             ),
             NavigationDestination(
-              icon: Icon(Icons.map_outlined),
-              selectedIcon: Icon(Icons.map_rounded, color: Color(0xFF2962FF)),
-              label: 'Maps',
+              icon: const Icon(Icons.map_outlined, size: 26),
+              selectedIcon: const Icon(Icons.map_rounded, color: Color(0xFF1E56D9), size: 26),
+              label: 'Bản đồ',
             ),
             NavigationDestination(
-              icon: Icon(Icons.favorite_border_rounded),
-              selectedIcon: Icon(Icons.favorite_rounded, color: Colors.redAccent), // Trái tim màu đỏ cho nổi bật
+              icon: const Icon(Icons.favorite_border_rounded, size: 26),
+              selectedIcon: const Icon(Icons.favorite_rounded, color: Colors.redAccent, size: 26),
               label: 'Yêu thích',
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded, color: Color(0xFF2962FF)),
+              icon: const Icon(Icons.person_outline_rounded, size: 26),
+              selectedIcon: const Icon(Icons.person_rounded, color: Color(0xFF1E56D9), size: 26),
               label: 'Tài khoản',
             ),
           ],

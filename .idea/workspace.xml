@@ -5,8 +5,81 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a696a68-d618-4bc0-bb87-ef04a44b027d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/copilotDiffState.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/api/seedData.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/bookingController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/courtController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/discountController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/notificationController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/paymentController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/paymentMethodController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/userController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/walletController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/controllers/wishlistController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/Discount.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/Notification.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/Payment.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/PaymentMethod.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/SubCourt.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/TimeSlot.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/Transaction.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/Wallet.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/models/Wishlist.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/bookingRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/courtRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/discountRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/notificationRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/paymentMethodRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/paymentRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/userRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/walletRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_server/routes/wishlistRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/.env.example" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/booking_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/court_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/notification_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/payment_method_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/wallet_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/wishlist_controller.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mobile_app/lib/services/api_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile_app/.env" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/.env" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/API_DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/API_DOCUMENTATION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/controllers/authController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/controllers/authController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/models/Booking.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/models/Booking.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/models/Court.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/models/Court.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/models/User.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/.bin/bcrypt" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/.bin/bcrypt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/routes/authRoutes.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/routes/authRoutes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_server/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend_server/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/ios/Flutter/AppFrameworkInfo.plist" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/ios/Flutter/AppFrameworkInfo.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/ios/Flutter/Debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/ios/Flutter/Debug.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/ios/Flutter/Release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/ios/Flutter/Release.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/ios/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/ios/Runner.xcworkspace/contents.xcworkspacedata" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/ios/Runner/AppDelegate.swift" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/ios/Runner/AppDelegate.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/ios/Runner/Info.plist" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/config/config.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/config/config.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/controllers/auth_controller.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/controllers/auth_controller.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/booking/booking_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/booking/booking_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/booking/checkout_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/booking/checkout_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/booking/my_bookings_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/booking/my_bookings_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/booking/qr_payment_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/booking/qr_payment_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/home/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/home/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/home/notifications_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/home/notifications_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/profile/edit_profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/edit_profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/profile/profile_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/profile_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/profile/transaction_history_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/profile/transaction_history_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/lib/views/wishlist/wishlist_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/lib/views/wishlist/wishlist_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/macos/Flutter/Flutter-Debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/macos/Flutter/Flutter-Debug.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/macos/Flutter/Flutter-Release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/macos/Flutter/Flutter-Release.xcconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile_app/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/mobile_app/pubspec.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +92,7 @@
   <component name="CopilotPersistence">
     <persistenceIdMap>
       <entry key="_/Users/anhthu/StudioProjects/booking" value="38QoHWQamwKD6XKjXRFfaKPvdDs" />
+      <entry key="_E:/Hoc in here/Nam 4-2025-2026/HK2/booking" value="3AuBZFW0L8st2B3wUVJFNgQAGqF" />
     </persistenceIdMap>
   </component>
   <component name="CopilotUserSelectedChatMode">
@@ -46,10 +120,10 @@
     &quot;assignee&quot;: &quot;ThanhTin-be&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/ThanhTin-be/booking.git&quot;,
-    &quot;accountId&quot;: &quot;6be5ed85-b084-45b3-a461-4ea8c716c4fa&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/ThanhTin-be/booking.git",
+    "accountId": "6be5ed85-b084-45b3-a461-4ea8c716c4fa"
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -63,26 +137,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Flutter.main.dart.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "#2 on copilot/fix-ui-backend-connection-issue",
-    "io.flutter.project.isFirstOpen": "true",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;io.flutter.project.isFirstOpen&quot;: &quot;true&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
 }]]></component>
   <component name="RecentsManager">
