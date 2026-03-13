@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CourtCard extends StatelessWidget {
   final String name;
@@ -28,101 +29,133 @@ class CourtCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Màu chủ đạo lấy từ Theme hoặc mặc định
-    final primaryColor = Theme.of(context).primaryColor;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.07),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           children: [
-            // --- PHẦN 1: ẢNH BÌA & CÁC NÚT TRÊN ẢNH ---
+            // --- IMAGE SECTION ---
             Stack(
               children: [
-                // Ảnh nền
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                   child: Image.network(
                     imageUrl,
-                    height: 150,
+                    height: 170,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    // Xử lý khi lỗi ảnh thì hiện khung xám
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 150,
-                        width: double.infinity,
-                        color: Colors.grey[300],
-                        child: Icon(Icons.broken_image, color: Colors.grey[600]),
-                      );
-                    },
-                    // Hiển thị khung chờ khi đang tải ảnh
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 170,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.grey[300]!, Colors.grey[200]!],
+                        ),
+                      ),
+                      child: Icon(Icons.image_not_supported_rounded, color: Colors.grey[400], size: 40),
+                    ),
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Container(
-                        height: 150,
+                        height: 170,
                         width: double.infinity,
-                        color: Colors.grey[200],
-                        child: const Center(child: CircularProgressIndicator()),
+                        color: Colors.grey[100],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                            strokeWidth: 2,
+                            color: const Color(0xFF1E56D9),
+                          ),
+                        ),
                       );
                     },
                   ),
                 ),
 
-                // Tags (Góc trái trên) - Ví dụ: Đơn ngày, Sự kiện
+                // Gradient overlay at bottom of image
                 Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Row(
-                    children: tags.map((tag) {
-                      // Màu tag khác nhau dựa vào nội dung (Ví dụ đơn giản)
-                      Color tagColor = tag == "Đơn ngày" ? Colors.green : Colors.pinkAccent;
-                      return Container(
-                        margin: const EdgeInsets.only(right: 6),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: tagColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          tag,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 70,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [Colors.black.withOpacity(0.45), Colors.transparent],
+                      ),
+                    ),
                   ),
                 ),
 
-                // Nút Tim & Share (Góc phải trên)
+                // Tags (top left)
+                if (tags.isNotEmpty)
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Row(
+                      children: tags.map((tag) {
+                        final Color tagColor = tag.toLowerCase().contains('ngày')
+                            ? const Color(0xFF00C853)
+                            : const Color(0xFFFF4081);
+                        return Container(
+                          margin: const EdgeInsets.only(right: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: tagColor,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: tagColor.withOpacity(0.4),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            tag,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
+                // Favourite & share buttons (top right)
                 Positioned(
-                  top: 12,
-                  right: 12,
+                  top: 10,
+                  right: 10,
                   child: Row(
                     children: [
-                      _buildCircleBtn(
-                        icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.black54,
+                      _CircleBtn(
+                        icon: isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        color: isFavorite ? Colors.redAccent : Colors.black54,
                         onTap: () {},
                       ),
                       const SizedBox(width: 8),
-                      _buildCircleBtn(
-                        icon: Icons.share_outlined,
+                      _CircleBtn(
+                        icon: Icons.share_rounded,
                         color: Colors.black54,
                         onTap: () {},
                       ),
@@ -132,113 +165,118 @@ class CourtCard extends StatelessWidget {
               ],
             ),
 
-            // --- PHẦN 2: THÔNG TIN CHI TIẾT ---
+            // --- INFO SECTION ---
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Logo sân (tròn)
+                  // Logo
                   Container(
-                    width: 50,
-                    height: 50,
+                    width: 48,
+                    height: 48,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade200),
-                      image: DecorationImage(
-                        image: NetworkImage(logoUrl),
-                        fit: BoxFit.cover,
-                        onError: (exception, stackTrace) {}, // Bỏ qua lỗi ảnh logo
-                      ),
+                      border: Border.all(color: const Color(0xFFEEF0F5), width: 2),
+                      color: Colors.grey[100],
+                      image: logoUrl.isNotEmpty
+                          ? DecorationImage(
+                              image: NetworkImage(logoUrl),
+                              fit: BoxFit.cover,
+                              onError: (e, s) {},
+                            )
+                          : null,
                     ),
-                    // Fallback nếu logo lỗi
                     child: logoUrl.isEmpty
-                        ? const Icon(Icons.sports_tennis)
+                        ? Icon(Icons.sports_tennis_rounded, size: 22, color: Colors.grey[400])
                         : null,
                   ),
 
                   const SizedBox(width: 12),
 
-                  // Cột thông tin chữ
+                  // Name & address
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Tên sân
                         Text(
                           name,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                             color: Colors.black87,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
-
-                        // Địa chỉ + Khoảng cách
+                        const SizedBox(height: 3),
                         Row(
                           children: [
-                            Text(
-                              "($distance) ",
-                              style: const TextStyle(
-                                color: Colors.orange, // Màu cam cho khoảng cách
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
+                            Icon(Icons.location_on_rounded, size: 13, color: Colors.grey[400]),
+                            const SizedBox(width: 3),
                             Expanded(
                               child: Text(
-                                address,
-                                style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                                distance.isNotEmpty ? "($distance) $address" : address,
+                                style: GoogleFonts.poppins(
+                                  color: Colors.grey[500],
+                                  fontSize: 12,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-
-                        const SizedBox(height: 4),
-
-                        // Giờ mở cửa
+                        const SizedBox(height: 3),
                         Row(
                           children: [
-                            Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
-                            const SizedBox(width: 4),
+                            Icon(Icons.access_time_rounded, size: 13, color: Colors.grey[400]),
+                            const SizedBox(width: 3),
                             Text(
                               openTime,
-                              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[500],
+                                fontSize: 12,
+                              ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
 
-                  // Nút ĐẶT LỊCH
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: onBookingTap,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[300], // Nền xám như hình
-                          foregroundColor: Colors.black54,   // Chữ đen nhạt
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  const SizedBox(width: 10),
+
+                  // Booking button
+                  GestureDetector(
+                    onTap: onBookingTap,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF1E56D9), Color(0xFF00C2FF)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        child: const Text(
-                          "ĐẶT LỊCH",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF1E56D9).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        "ĐẶT LỊCH",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
                         ),
                       ),
-                    ],
-                  )
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -247,17 +285,32 @@ class CourtCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  // Widget con hỗ trợ vẽ nút tròn nhỏ
-  Widget _buildCircleBtn({required IconData icon, required Color color, required VoidCallback onTap}) {
+class _CircleBtn extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _CircleBtn({required this.icon, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 32,
-        height: 32,
-        decoration: const BoxDecoration(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Icon(icon, size: 18, color: color),
       ),

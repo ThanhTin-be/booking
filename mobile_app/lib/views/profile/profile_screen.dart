@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/wallet_controller.dart';
 import '../booking/my_bookings_screen.dart';
@@ -21,7 +22,7 @@ class ProfileScreen extends StatelessWidget {
     final WalletController walletController = Get.put(WalletController());
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFFF8F9FE),
       body: Obx(() {
         final user = authController.user;
         return SingleChildScrollView(
@@ -33,31 +34,49 @@ class ProfileScreen extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 children: [
                   Container(
-                    height: 220,
+                    height: 230,
                     width: double.infinity,
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF2962FF), Color(0xFF00B0FF)],
+                        colors: [Color(0xFF1E56D9), Color(0xFF00C2FF)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.vertical(bottom: Radius.elliptical(400, 60)),
+                    ),
+                  ),
+                  // Decorative circle
+                  Positioned(
+                    top: -30,
+                    right: -40,
+                    child: Container(
+                      width: 160,
+                      height: 160,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.06),
+                      ),
                     ),
                   ),
                   Positioned(
-                    top: 70,
+                    top: 60,
                     left: 24,
                     right: 24,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(3),
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), shape: BoxShape.circle),
-                          child: CircleAvatar(
-                            radius: 35,
-                            backgroundImage: NetworkImage(authController.avatarUrl),
-                            backgroundColor: Colors.white,
+                        GestureDetector(
+                          onTap: () => Get.to(() => const EditProfileScreen()),
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.25),
+                              shape: BoxShape.circle,
+                            ),
+                            child: CircleAvatar(
+                              radius: 36,
+                              backgroundImage: NetworkImage(authController.avatarUrl),
+                              backgroundColor: Colors.white,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -65,39 +84,82 @@ class ProfileScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(user['fullName'] ?? "Khách", style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+                              Text(
+                                user['fullName'] ?? "Khách",
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                               const SizedBox(height: 4),
-                              Text(user['phone'] ?? user['email'] ?? "Chưa có thông tin", style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                              Text(
+                                user['phone'] ?? user['email'] ?? "Chưa có thông tin",
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white70,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () => Get.to(() => const EditProfileScreen()),
-                          icon: const Icon(Icons.edit_square, color: Colors.white70, size: 20),
-                        )
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () => Get.to(() => const EditProfileScreen()),
+                            icon: const Icon(Icons.edit_rounded, color: Colors.white, size: 18),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   // Stats Card
                   Positioned(
-                    bottom: -40,
+                    bottom: -46,
                     left: 20,
                     right: 20,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 5))],
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
                       child: Obx(() => Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _buildStatItem("Số dư ví", _formatCurrency(walletController.balance.value), Colors.blue),
+                          _buildStatItem(
+                            "Số dư ví",
+                            _formatCurrency(walletController.balance.value),
+                            const Color(0xFF1E56D9),
+                            Icons.account_balance_wallet_rounded,
+                          ),
                           _buildDivider(),
-                          _buildStatItem("Điểm thưởng", "${walletController.points.value}", Colors.orange),
+                          _buildStatItem(
+                            "Điểm thưởng",
+                            "${walletController.points.value} điểm",
+                            Colors.orange,
+                            Icons.stars_rounded,
+                          ),
                           _buildDivider(),
-                          _buildStatItem("Hạng", user['role'] == 'admin' ? 'Admin' : 'Thành viên', Colors.amber),
+                          _buildStatItem(
+                            "Hạng",
+                            user['role'] == 'admin' ? 'Admin' : 'VIP',
+                            Colors.amber[700]!,
+                            Icons.workspace_premium_rounded,
+                          ),
                         ],
                       )),
                     ),
@@ -105,57 +167,95 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 60),
+              const SizedBox(height: 70),
 
-              // --- MENU CHỨC NĂNG ---
+              // --- MENU ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Quản lý", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                    const SizedBox(height: 10),
-                    _buildMenuItem(icon: Icons.confirmation_number_outlined, title: "Vé của tôi", iconColor: Colors.orange,
-                      onTap: () => Get.to(() => const MyBookingsScreen())),
+                    _buildSectionTitle("Quản lý"),
+                    _buildMenuItem(
+                      icon: Icons.confirmation_number_rounded,
+                      title: "Vé của tôi",
+                      subtitle: "Xem lịch đặt sân",
+                      iconColor: Colors.orange,
+                      onTap: () => Get.to(() => const MyBookingsScreen()),
+                    ),
+
+                    _buildSectionTitle("Công cụ thể thao"),
+                    _buildMenuItem(
+                      icon: Icons.scoreboard_rounded,
+                      title: "Tính điểm Cầu lông",
+                      subtitle: "Công cụ tính điểm thi đấu",
+                      iconColor: Colors.green,
+                      onTap: () => Get.to(() => const BadmintonScoreScreen()),
+                    ),
+
+                    _buildSectionTitle("Tài khoản"),
+                    _buildMenuItem(
+                      icon: Icons.person_rounded,
+                      title: "Chỉnh sửa thông tin",
+                      subtitle: "Cập nhật hồ sơ cá nhân",
+                      onTap: () => Get.to(() => const EditProfileScreen()),
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.account_balance_wallet_rounded,
+                      title: "Quản lý thanh toán",
+                      subtitle: "Ví & phương thức thanh toán",
+                      iconColor: const Color(0xFF1E56D9),
+                      onTap: () => Get.to(() => const PaymentManagementScreen()),
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.history_rounded,
+                      title: "Lịch sử giao dịch",
+                      subtitle: "Xem các giao dịch gần đây",
+                      iconColor: Colors.purple,
+                      onTap: () => Get.to(() => const TransactionHistoryScreen()),
+                    ),
+
+                    _buildSectionTitle("Tiện ích"),
+                    _buildMenuItem(
+                      icon: Icons.card_giftcard_rounded,
+                      title: "Ưu đãi của tôi",
+                      subtitle: "Voucher & khuyến mãi",
+                      iconColor: Colors.pinkAccent,
+                      onTap: () => Get.to(() => const MyOffersScreen()),
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.group_add_rounded,
+                      title: "Mời bạn bè",
+                      subtitle: "Chia sẻ và nhận thưởng",
+                      iconColor: Colors.teal,
+                      onTap: () {},
+                    ),
 
                     const SizedBox(height: 20),
-                    const Text("Công cụ thể thao", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                    const SizedBox(height: 10),
-                    _buildMenuItem(icon: Icons.scoreboard_outlined, title: "Tính điểm Cầu lông", iconColor: Colors.green,
-                      onTap: () => Get.to(() => const BadmintonScoreScreen())),
 
-                    const SizedBox(height: 20),
-                    const Text("Tài khoản", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                    const SizedBox(height: 10),
-                    _buildMenuItem(icon: Icons.person_outline, title: "Chỉnh sửa thông tin",
-                      onTap: () => Get.to(() => const EditProfileScreen())),
-                    _buildMenuItem(icon: Icons.account_balance_wallet_outlined, title: "Quản lý thanh toán",
-                      onTap: () => Get.to(() => const PaymentManagementScreen())),
-                    _buildMenuItem(icon: Icons.history, title: "Lịch sử giao dịch",
-                      onTap: () => Get.to(() => const TransactionHistoryScreen())),
-
-                    const SizedBox(height: 20),
-                    const Text("Tiện ích", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey)),
-                    const SizedBox(height: 10),
-                    _buildMenuItem(icon: Icons.card_giftcard, title: "Ưu đãi của tôi",
-                      onTap: () => Get.to(() => const MyOffersScreen())),
-                    _buildMenuItem(icon: Icons.group_add_outlined, title: "Mời bạn bè", onTap: () {}),
-
-                    const SizedBox(height: 20),
-                    SizedBox(
+                    Container(
                       width: double.infinity,
-                      child: OutlinedButton(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.redAccent.withOpacity(0.4), width: 1.5),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: TextButton.icon(
                         onPressed: () => authController.logout(),
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          side: const BorderSide(color: Colors.redAccent),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          foregroundColor: Colors.redAccent,
+                        icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 20),
+                        label: Text(
+                          "Đăng xuất",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.redAccent,
+                          ),
                         ),
-                        child: const Text("Đăng xuất", style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
@@ -166,45 +266,109 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value, Color color) {
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 10),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey[500],
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value, Color color, IconData icon) {
     return Column(
       children: [
-        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Icon(icon, color: color, size: 22),
+        const SizedBox(height: 6),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[500]),
+        ),
       ],
     );
   }
 
-  Widget _buildDivider() => Container(height: 30, width: 1, color: Colors.grey[300]);
+  Widget _buildDivider() => Container(height: 36, width: 1, color: const Color(0xFFEEF0F5));
 
   Widget _buildMenuItem({
-    required IconData icon, required String title, String? badge,
-    Color iconColor = const Color(0xFF2962FF), required VoidCallback onTap,
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    String? badge,
+    Color iconColor = const Color(0xFF1E56D9),
+    required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white, borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.05), spreadRadius: 1, blurRadius: 5)],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         onTap: onTap,
         leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: iconColor.withOpacity(0.1), shape: BoxShape.circle),
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Icon(icon, color: iconColor, size: 22),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+        title: Text(
+          title,
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 14),
+        ),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle,
+                style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[500]),
+              )
+            : null,
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (badge != null) Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(10)),
-              child: Text(badge, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-            ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            if (badge != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  badge,
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            Icon(Icons.chevron_right_rounded, color: Colors.grey[400], size: 22),
           ],
         ),
       ),

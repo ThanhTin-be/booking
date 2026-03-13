@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../auth/login_screen.dart'; // Import màn hình Login từ thư mục auth
+import 'package:google_fonts/google_fonts.dart';
+import '../auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -8,24 +9,32 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  // Thời gian hiển thị splash screen (giây)
-  final int splashDuration = 3;
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+  late Animation<double> _scaleAnim;
 
   @override
   void initState() {
     super.initState();
+    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200));
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeIn);
+    _scaleAnim = Tween<double>(begin: 0.75, end: 1.0).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutBack),
+    );
+    _animController.forward();
     _startTime();
   }
 
-  // Hàm đếm giờ và chuyển trang
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
   void _startTime() async {
-    await Future.delayed(Duration(seconds: splashDuration));
-
-    // Kiểm tra mounted để tránh lỗi nếu user thoát app giữa chừng
+    await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
-
-    // Chuyển sang màn hình Login (Dùng pushReplacement để không back lại được Splash)
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -35,55 +44,123 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final primaryColor = Theme.of(context).primaryColor;
 
     return Scaffold(
-      // Màu nền đã được lấy từ Theme (trong main.dart), không cần set cứng
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1E56D9), Color(0xFF00C2FF)],
+          ),
+        ),
+        child: Stack(
           children: [
-            // --- 1. LOGO ---
-            // Sau này thay bằng Image.asset('assets/images/logo.png')
-            Icon(
-              Icons.sports_tennis_rounded,
-              size: size.width * 0.3,
-              color: primaryColor,
+            // Decorative circles
+            Positioned(
+              top: -size.width * 0.25,
+              right: -size.width * 0.15,
+              child: Container(
+                width: size.width * 0.7,
+                height: size.width * 0.7,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.07),
+                ),
+              ),
             ),
-
-            const SizedBox(height: 24),
-
-            // --- 2. TÊN APP ---
-            const Text(
-              "BADMINTON BOOKING",
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white, // Màu trắng cho nổi trên nền tối
-                letterSpacing: 1.5,
+            Positioned(
+              bottom: -size.width * 0.3,
+              left: -size.width * 0.2,
+              child: Container(
+                width: size.width * 0.75,
+                height: size.width * 0.75,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.07),
+                ),
               ),
             ),
 
-            const SizedBox(height: 8),
+            // Main content
+            Center(
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: ScaleTransition(
+                  scale: _scaleAnim,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Icon container
+                      Container(
+                        width: size.width * 0.28,
+                        height: size.width * 0.28,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white.withOpacity(0.4), width: 2),
+                        ),
+                        child: Icon(
+                          Icons.sports_tennis_rounded,
+                          size: size.width * 0.15,
+                          color: Colors.white,
+                        ),
+                      ),
 
-            // --- 3. SLOGAN ---
-            Text(
-              "Đặt sân nhanh chóng - Dễ dàng",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white.withOpacity(0.6),
-              ),
-            ),
+                      const SizedBox(height: 32),
 
-            const SizedBox(height: 60),
+                      Text(
+                        "BADMINTON",
+                        style: GoogleFonts.poppins(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: 4,
+                        ),
+                      ),
+                      Text(
+                        "BOOKING",
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w300,
+                          color: Colors.white.withOpacity(0.9),
+                          letterSpacing: 8,
+                        ),
+                      ),
 
-            // --- 4. LOADING ---
-            SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withOpacity(0.7)),
+                      const SizedBox(height: 12),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          "Đặt sân nhanh chóng · Dễ dàng",
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 80),
+
+                      SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withOpacity(0.7)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
