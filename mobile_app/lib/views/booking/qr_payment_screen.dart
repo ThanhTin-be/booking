@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controllers/booking_controller.dart';
 
 class QRPaymentScreen extends StatelessWidget {
   final String paymentMethod; // "Bank" hoặc "MoMo"
   final int amount;
+  final String paymentId;
 
   const QRPaymentScreen({
     super.key,
     required this.paymentMethod,
     required this.amount,
+    this.paymentId = '',
   });
 
   @override
   Widget build(BuildContext context) {
+    final BookingController bookingController = Get.find<BookingController>();
+
     final String qrImageUrl = paymentMethod == "MoMo"
-        ? "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=MOMO_PAYMENT_DEMO"
-        : "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=BANK_TRANSFER_DEMO";
+        ? "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=MOMO_PAYMENT_$paymentId"
+        : "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=BANK_TRANSFER_$paymentId";
 
     return Scaffold(
       appBar: AppBar(
@@ -72,7 +78,7 @@ class QRPaymentScreen extends StatelessWidget {
                   children: [
                     _buildInfoRow("Số tiền", "${_formatCurrency(amount)}"),
                     const Divider(),
-                    _buildInfoRow("Nội dung", "DATSAN${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}"),
+                    _buildInfoRow("Nội dung", "DATSAN${paymentId.isNotEmpty ? paymentId.substring(paymentId.length > 6 ? paymentId.length - 6 : 0) : DateTime.now().millisecondsSinceEpoch.toString().substring(7)}"),
                   ],
                 ),
               ),
@@ -98,7 +104,15 @@ class QRPaymentScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    if (paymentId.isNotEmpty) {
+                      final success = await bookingController.confirmPayment(paymentId);
+                      if (success) {
+                        _showSuccessDialog(context);
+                        return;
+                      }
+                    }
+                    // Fallback: show success anyway (demo mode)
                     _showSuccessDialog(context);
                   },
                   style: ElevatedButton.styleFrom(

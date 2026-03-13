@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controllers/auth_controller.dart';
+import '../../controllers/court_controller.dart';
+import '../../controllers/wishlist_controller.dart';
 import '../../widgets/court_card.dart';
 import '../booking/booking_screen.dart';
 import 'notifications_screen.dart';
@@ -11,88 +15,55 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Dữ liệu giả lập các sân (Dummy Data)
-  final List<Map<String, dynamic>> dummyCourts = [
-    {
-      "name": "PM PICKLEBALL",
-      "address": "104 Tân Sơn, P.15, Q.Tân Bình",
-      "distance": "497.4m",
-      "openTime": "05:00 - 23:00",
-      "imageUrl": "https://img.freepik.com/free-photo/pickleball-court-with-net_23-2151439498.jpg?w=1060", // Ảnh ví dụ
-      "logoUrl": "https://cdn-icons-png.flaticon.com/512/33/33736.png", // Logo ví dụ
-      "tags": ["Đơn ngày", "Sự kiện"],
-      "isFavorite": false,
-    },
-    {
-      "name": "SÂN BÓNG ĐÁ PM SPORT",
-      "address": "104 Đ. Tân Sơn, P.15, Tân Bình",
-      "distance": "498.3m",
-      "openTime": "00:00 - 24:00",
-      "imageUrl": "https://img.freepik.com/free-photo/soccer-field-stadium_1150-12821.jpg",
-      "logoUrl": "https://cdn-icons-png.flaticon.com/512/867/867332.png",
-      "tags": ["Đơn ngày"],
-      "isFavorite": true,
-    },
-    {
-      "name": "CLB Cầu Lông Chiến Thắng",
-      "address": "45 Phạm Văn Đồng, Thủ Đức",
-      "distance": "2.1km",
-      "openTime": "06:00 - 22:00",
-      "imageUrl": "https://img.freepik.com/free-photo/shuttlecock-badminton-racket-indoor-court_23-2148204642.jpg",
-      "logoUrl": "https://cdn-icons-png.flaticon.com/512/103/103956.png",
-      "tags": [],
-      "isFavorite": false,
-    },
-  ];
+  final AuthController _authController = Get.find<AuthController>();
+  final CourtController _courtController = Get.put(CourtController());
+  final WishlistController _wishlistController = Get.put(WishlistController());
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Nền tổng thể xám nhạt
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Tắt nút back mặc định
-        backgroundColor: Colors.transparent, // Trong suốt hoặc màu xanh tùy ý
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF2962FF), Color(0xFF00B0FF)], // Gradient xanh thể thao
+              colors: [Color(0xFF2962FF), Color(0xFF00B0FF)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-        title: Row(
-          children: [
-            // Avatar nhỏ góc trái
-            const CircleAvatar(
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150?img=12"), // Ảnh đại diện giả
-              radius: 18,
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  "Xin chào,",
-                  style: TextStyle(fontSize: 12, color: Colors.white70),
-                ),
-                Text(
-                  "Thanh Tín", // Tên user giả định
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-              ],
-            ),
-          ],
-        ),
+        title: Obx(() {
+          final user = _authController.user;
+          return Row(
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(_authController.avatarUrl),
+                radius: 18,
+              ),
+              const SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Xin chào,", style: TextStyle(fontSize: 12, color: Colors.white70)),
+                  Text(
+                    user['fullName'] ?? "Khách",
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.white),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificationsScreen()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsScreen()));
             },
           ),
           IconButton(
@@ -103,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          // Phần Header Tìm kiếm
+          // Search bar
           Container(
             padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 10),
             decoration: const BoxDecoration(
@@ -115,10 +86,20 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
             ),
             child: TextField(
+              controller: _searchController,
+              onSubmitted: (value) {
+                _courtController.searchCourts(value);
+              },
               decoration: InputDecoration(
                 hintText: 'Tìm kiếm sân...',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                suffixIcon: const Icon(Icons.qr_code_scanner, color: Colors.grey),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear, color: Colors.grey),
+                  onPressed: () {
+                    _searchController.clear();
+                    _courtController.searchResults.clear();
+                  },
+                ),
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
@@ -130,39 +111,58 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Phần Danh sách Sân
+          // Court list
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: dummyCourts.length,
-              itemBuilder: (context, index) {
-                final court = dummyCourts[index];
+            child: Obx(() {
+              final displayCourts = _courtController.searchResults.isNotEmpty
+                  ? _courtController.searchResults
+                  : _courtController.courts;
 
-                return CourtCard(
-                  name: court["name"],
-                  address: court["address"],
-                  distance: court["distance"],
-                  openTime: court["openTime"],
-                  imageUrl: court["imageUrl"],
-                  logoUrl: court["logoUrl"],
-                  // Chuyển đổi an toàn từ dynamic sang List<String>
-                  tags: List<String>.from(court["tags"]),
-                  isFavorite: court["isFavorite"],
-                  onTap: () {
-                    print("Đã chọn sân: ${court['name']}");
+              if (_courtController.isLoading.value && displayCourts.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (displayCourts.isEmpty) {
+                return const Center(child: Text("Không tìm thấy sân nào"));
+              }
+
+              return RefreshIndicator(
+                onRefresh: () => _courtController.fetchCourts(),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: displayCourts.length,
+                  itemBuilder: (context, index) {
+                    final court = displayCourts[index];
+                    final courtId = court['_id'] ?? '';
+
+                    return Obx(() => CourtCard(
+                      name: court['name'] ?? '',
+                      address: court['address'] ?? '',
+                      distance: '',
+                      openTime: "${court['openTime'] ?? '06:00'} - ${court['closeTime'] ?? '22:00'}",
+                      imageUrl: (court['images'] != null && court['images'].isNotEmpty)
+                          ? court['images'][0]
+                          : 'https://via.placeholder.com/400x200',
+                      logoUrl: court['logoUrl'] ?? '',
+                      tags: List<String>.from(court['tags'] ?? []),
+                      isFavorite: _wishlistController.isFavorite(courtId),
+                      onTap: () {},
+                      onBookingTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookingScreen(
+                              courtId: courtId,
+                              courtName: court['name'] ?? '',
+                            ),
+                          ),
+                        );
+                      },
+                    ));
                   },
-                  onBookingTap: () {
-                    // Điều hướng sang trang BookingGrid
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BookingScreen(courtName: court['name']),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                ),
+              );
+            }),
           ),
         ],
       ),

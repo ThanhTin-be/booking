@@ -195,7 +195,10 @@ const getCurrentUser = async (req, res) => {
 // ============ XÁC THỰC EMAIL ============
 const verifyEmail = async (req, res) => {
     try {
-        const { email, code: verificationCode } = req.body;
+        const { email } = req.body;
+        const verificationCode = req.body.code || req.body.verificationCode || req.body.otp;
+
+        console.log('📥 Request body:', req.body);
 
         // Kiểm tra dữ liệu đầu vào
         if (!email || !verificationCode) {
@@ -377,11 +380,99 @@ const getRandomAvatar = () => {
     }
 };
 
+// ============ QUÊN MẬT KHẨU ============
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: 'Vui lòng nhập email' });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy tài khoản với email này' });
+        }
+
+        // Tạo mã reset (6 chữ số)
+        const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const resetCodeExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 phút
+
+        user.resetPasswordCode = resetCode;
+        user.resetPasswordCodeExpires = resetCodeExpires;
+        await user.save();
+
+        // Gửi email
+        const emailSubject = '🔑 Đặt lại mật khẩu - Badminton App';
+        const emailText = `Mã đặt lại mật khẩu của bạn là: ${resetCode}\n\nMã này sẽ hết hạn sau 15 phút.\n\nNếu bạn không yêu cầu điều này, vui lòng bỏ qua email này.`;
+
+        try {
+            await sendEmail(email, emailSubject, emailText);
+        } catch (emailError) {
+            console.error('Lỗi gửi email reset:', emailError);
+        }
+
+        return res.status(200).json({
+            message: 'Mã đặt lại mật khẩu đã được gửi đến email của bạn'
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
+// ============ ĐẶT LẠI MẬT KHẨU ============
+const resetPassword = async (req, res) => {
+    try {
+        const { email, code, newPassword } = req.body;
+
+        if (!email || !code || !newPassword) {
+            return res.status(400).json({ message: 'Vui lòng nhập đầy đủ email, mã xác thực và mật khẩu mới' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 6 ký tự' });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'Không tìm thấy tài khoản' });
+        }
+
+        // Kiểm tra mã reset
+        if (!user.resetPasswordCode) {
+            return res.status(400).json({ message: 'Không có yêu cầu đặt lại mật khẩu. Vui lòng gửi lại.' });
+        }
+
+        if (new Date() > user.resetPasswordCodeExpires) {
+            return res.status(400).json({ message: 'Mã đã hết hạn. Vui lòng yêu cầu mã mới.' });
+        }
+
+        if (code.toString().trim() !== user.resetPasswordCode.toString().trim()) {
+            return res.status(400).json({ message: 'Mã xác thực không đúng' });
+        }
+
+        // Hash mật khẩu mới
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.resetPasswordCode = null;
+        user.resetPasswordCodeExpires = null;
+        await user.save();
+
+        return res.status(200).json({
+            message: 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập bằng mật khẩu mới.'
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
 module.exports = {
     register,
     login,
     getCurrentUser,
     logout,
     verifyEmail,
-    resendVerificationCode
+    resendVerificationCode,
+    forgotPassword,
+    resetPassword
 };

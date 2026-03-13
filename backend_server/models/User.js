@@ -11,6 +11,12 @@ const UserSchema = new mongoose.Schema({
     emailVerified: { type: Boolean, default: false },
     verificationCode: { type: String, default: null }, // Mã xác thực
     verificationCodeExpires: { type: Date, default: null }, // Hết hạn mã xác thực
+    // Quên mật khẩu
+    resetPasswordCode: { type: String, default: null },
+    resetPasswordCodeExpires: { type: Date, default: null },
+    // Thông tin mở rộng
+    address: { type: String, default: '' },
+    status: { type: String, enum: ['active', 'locked'], default: 'active' },
     // Dùng để quản lý Refresh Token (Công nghệ mới để bảo mật mobile)
     refreshTokens: [{ type: String }],
 }, { timestamps: true });

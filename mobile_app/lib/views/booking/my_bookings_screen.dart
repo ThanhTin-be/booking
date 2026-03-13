@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controllers/booking_controller.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -9,11 +11,19 @@ class MyBookingsScreen extends StatefulWidget {
 
 class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final BookingController _bookingController = Get.put(BookingController());
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadBookings();
+  }
+
+  void _loadBookings() {
+    _bookingController.fetchBookings('upcoming');
+    _bookingController.fetchBookings('completed');
+    _bookingController.fetchBookings('cancelled');
   }
 
   @override
@@ -27,7 +37,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: const BackButton(color: Colors.black), // Có nút Back để quay về Profile
+        leading: const BackButton(color: Colors.black),
         bottom: TabBar(
           controller: _tabController,
           labelColor: primaryColor,
@@ -45,68 +55,52 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildBookingList(status: "upcoming"),
-          _buildBookingList(status: "completed"),
-          _buildBookingList(status: "cancelled"),
+          _buildBookingTab(_bookingController.upcomingBookings, isUpcoming: true),
+          _buildBookingTab(_bookingController.completedBookings),
+          _buildBookingTab(_bookingController.cancelledBookings),
         ],
       ),
     );
   }
 
-  Widget _buildBookingList({required String status}) {
-    // Dữ liệu giả lập
-    final List<Map<String, dynamic>> dummyBookings = [
-      {
-        "id": "#BK1001",
-        "courtName": "PM PICKLEBALL",
-        "subCourt": "Sân 5",
-        "date": "20/01/2026",
-        "time": "17:30 - 19:00",
-        "price": "150.000 đ",
-        "status": "upcoming",
-        "image": "https://img.freepik.com/free-photo/pickleball-court-with-net_23-2151439498.jpg?w=1060",
-      },
-      {
-        "id": "#BK0998",
-        "courtName": "Sân Cầu Lông ABC",
-        "subCourt": "Sân 2",
-        "date": "15/01/2026",
-        "time": "18:00 - 19:00",
-        "price": "100.000 đ",
-        "status": "completed",
-        "image": "https://img.freepik.com/free-photo/shuttlecock-badminton-racket-indoor-court_23-2148204642.jpg",
-      },
-      {
-        "id": "#BK0888",
-        "courtName": "Sân Bóng Đá PM",
-        "subCourt": "Sân 7",
-        "date": "10/01/2026",
-        "time": "16:00 - 17:30",
-        "price": "200.000 đ",
-        "status": "cancelled",
-        "image": "https://img.freepik.com/free-photo/soccer-field-stadium_1150-12821.jpg",
-      },
-    ];
-
-    final filteredList = dummyBookings.where((item) => item['status'] == status).toList();
-
-    if (filteredList.isEmpty) {
-      return Center(child: Text("Không có vé nào", style: TextStyle(color: Colors.grey[500])));
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: filteredList.length,
-      itemBuilder: (context, index) {
-        final item = filteredList[index];
-        return _buildTicketCard(item, context);
-      },
-    );
+  Widget _buildBookingTab(RxList<dynamic> bookingsList, {bool isUpcoming = false}) {
+    return Obx(() {
+      if (_bookingController.isLoading.value && bookingsList.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      if (bookingsList.isEmpty) {
+        return Center(child: Text("Không có vé nào", style: TextStyle(color: Colors.grey[500])));
+      }
+      return RefreshIndicator(
+        onRefresh: () async => _loadBookings(),
+        child: ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: bookingsList.length,
+          itemBuilder: (context, index) {
+            final item = bookingsList[index];
+            return _buildTicketCard(item, context, isUpcoming: isUpcoming);
+          },
+        ),
+      );
+    });
   }
 
-  Widget _buildTicketCard(Map<String, dynamic> item, BuildContext context) {
-    Color statusColor = item['status'] == 'upcoming' ? Colors.green : (item['status'] == 'completed' ? Colors.blue : Colors.red);
-    String statusText = item['status'] == 'upcoming' ? "Đã thanh toán" : (item['status'] == 'completed' ? "Hoàn tất" : "Đã hủy");
+  Widget _buildTicketCard(dynamic item, BuildContext context, {bool isUpcoming = false}) {
+    final status = item['status'] ?? 'upcoming';
+    Color statusColor = status == 'upcoming' ? Colors.green : (status == 'completed' ? Colors.blue : Colors.red);
+    String statusText = status == 'upcoming' ? "Sắp tới" : (status == 'completed' ? "Hoàn tất" : "Đã hủy");
+
+    final court = item['court'] is Map ? item['court'] : {};
+    final courtName = court['name'] ?? item['courtName'] ?? 'Sân không rõ';
+    final date = item['date'] ?? '';
+    final timeSlots = item['timeSlots'] is List ? item['timeSlots'] : [];
+    final time = timeSlots.isNotEmpty
+        ? "${timeSlots.first['startTime'] ?? ''} - ${timeSlots.last['endTime'] ?? ''}"
+        : '';
+    final price = item['totalPrice'] ?? 0;
+    final image = (court['images'] is List && court['images'].isNotEmpty)
+        ? court['images'][0]
+        : 'https://via.placeholder.com/150';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -123,8 +117,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(item['image'], width: 80, height: 80, fit: BoxFit.cover,
-                    errorBuilder: (c,e,s) => Container(width: 80, height: 80, color: Colors.grey[300], child: const Icon(Icons.sports_tennis)),
+                  child: Image.network(image, width: 80, height: 80, fit: BoxFit.cover,
+                    errorBuilder: (c, e, s) => Container(width: 80, height: 80, color: Colors.grey[300], child: const Icon(Icons.sports_tennis)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -132,24 +126,37 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(item['courtName'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text(courtName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                       const SizedBox(height: 4),
-                      Text("${item['subCourt']} • ${item['date']}", style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                      Text(date, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
                       const SizedBox(height: 4),
-                      Text(item['time'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      Text(time, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     ],
                   ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(item['price'], style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+                    Text(_formatCurrency(price is int ? price : int.tryParse(price.toString()) ?? 0),
+                        style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
                       child: Text(statusText, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
-                    )
+                    ),
+                    if (isUpcoming) ...[
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          final bookingId = item['_id'];
+                          if (bookingId != null) {
+                            _showCancelDialog(context, bookingId);
+                          }
+                        },
+                        child: const Text("Hủy vé", style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold)),
+                      ),
+                    ]
                   ],
                 )
               ],
@@ -159,4 +166,27 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
       ),
     );
   }
+
+  void _showCancelDialog(BuildContext context, String bookingId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Hủy vé"),
+        content: const Text("Bạn có chắc muốn hủy vé này?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Không")),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _bookingController.cancelBooking(bookingId);
+            },
+            child: const Text("Hủy vé", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatCurrency(int amount) =>
+      "${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')} đ";
 }
