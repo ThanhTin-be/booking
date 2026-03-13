@@ -11,7 +11,7 @@ void main() async {
   // Load environment variables (bỏ qua nếu file .env trống hoặc thiếu)
   try {
     await dotenv.load(fileName: ".env", mergeWith: {
-      'API_BASE_URL': 'http://172.20.10.7:3000/api',
+      'API_BASE_URL': 'http://10.0.2.2:3000/api',
     });
   } catch (e) {
     // .env trống hoặc không tìm thấy → dùng giá trị mặc định trong AppConfig

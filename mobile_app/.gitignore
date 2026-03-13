@@ -62,7 +62,8 @@ yarn-debug.log*
 yarn-error.log*
 
 # Environment Variables (Bảo mật, không được up lên)
-.env
+# Lưu ý: mobile_app/.env cần được commit vì nó là Flutter asset
+# (chỉ chứa API_BASE_URL, không chứa secrets)
 .env.local
 .env.development.local
 .env.test.local
