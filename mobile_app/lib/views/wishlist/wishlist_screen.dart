@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../config/config.dart';
 import '../../controllers/wishlist_controller.dart';
 import '../../widgets/court_card.dart';
 import '../booking/booking_screen.dart';
@@ -74,11 +75,12 @@ class WishlistScreen extends StatelessWidget {
                 distance: '',
                 openTime: "${court['openTime'] ?? '06:00'} - ${court['closeTime'] ?? '22:00'}",
                 imageUrl: (court['images'] != null && court['images'].isNotEmpty)
-                    ? court['images'][0]
-                    : 'https://via.placeholder.com/400x200',
-                logoUrl: court['logoUrl'] ?? '',
+                    ? AppConfig.toFullImageUrl(court['images'][0])
+                    : '',
+                logoUrl: AppConfig.toFullImageUrl(court['logoUrl']),
                 tags: List<String>.from(court['tags'] ?? []),
                 isFavorite: true,
+                onFavoriteTap: () => controller.toggleFavorite(courtId),
                 onTap: () {},
                 onBookingTap: () {
                   Navigator.push(

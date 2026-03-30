@@ -1,0 +1,16 @@
+# Android Studio / IntelliJ
+.idea/
+*.iml
+
+# Flutter auto-generated platform folders (real app is in mobile_app/)
+/android/
+/ios/
+/linux/
+/macos/
+/windows/
+/build/
+/lib/
+/.dart_tool/
+
+# macOS
+.DS_Store

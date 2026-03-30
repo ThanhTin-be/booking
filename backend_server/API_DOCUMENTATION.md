@@ -675,7 +675,11 @@ Authorization: Bearer <token>
   "wallet": { "id": "wallet_id", "balance": 500000, "points": 50, "tier": "member" }
 }
 ```
-> **tier**: member → silver (100 điểm) → gold (500 điểm) → platinum (1000 điểm)
+> **tier** (theo tổng điểm thưởng `points`):
+> - `member`: 0 <= points < 500
+> - `silver`: 500 <= points < 1500
+> - `gold`: 1500 <= points < 3000
+> - `platinum`: points >= 3000
 
 ---
 

@@ -505,6 +505,15 @@
           },
           "user": {
             "$ref": "#/components/schemas/User"
+          },
+          "wallet": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "example": "64a5f3c1d7e9a2b3c4d5e6f7" },
+              "balance": { "type": "number", "example": 250000 },
+              "points": { "type": "number", "example": 1200 },
+              "tier": { "type": "string", "enum": ["member", "silver", "gold", "platinum"], "example": "silver" }
+            }
           }
         }
       },

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/booking_controller.dart';
+import '../../config/config.dart';
+import 'booking_detail_screen.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -86,83 +88,109 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> with SingleTickerPr
   }
 
   Widget _buildTicketCard(dynamic item, BuildContext context, {bool isUpcoming = false}) {
-    final status = item['status'] ?? 'upcoming';
-    Color statusColor = status == 'upcoming' ? Colors.green : (status == 'completed' ? Colors.blue : Colors.red);
-    String statusText = status == 'upcoming' ? "Sắp tới" : (status == 'completed' ? "Hoàn tất" : "Đã hủy");
+    final status = item['status'] ?? 'pending';
+    Color statusColor;
+    String statusText;
+    if (status == 'pending') {
+      statusColor = Colors.orange;
+      statusText = "Đang giữ";
+    } else if (status == 'confirmed') {
+      statusColor = Colors.green;
+      statusText = "Đã đặt";
+    } else if (status == 'completed') {
+      statusColor = Colors.blue;
+      statusText = "Hoàn tất";
+    } else {
+      statusColor = Colors.red;
+      statusText = "Đã hủy";
+    }
 
     final court = item['court'] is Map ? item['court'] : {};
     final courtName = court['name'] ?? item['courtName'] ?? 'Sân không rõ';
     final date = item['date'] ?? '';
-    final timeSlots = item['timeSlots'] is List ? item['timeSlots'] : [];
-    final time = timeSlots.isNotEmpty
-        ? "${timeSlots.first['startTime'] ?? ''} - ${timeSlots.last['endTime'] ?? ''}"
+    final time = (item['startTime'] != null && item['endTime'] != null)
+        ? "${item['startTime']} - ${item['endTime']}"
         : '';
     final price = item['totalPrice'] ?? 0;
-    final image = (court['images'] is List && court['images'].isNotEmpty)
-        ? court['images'][0]
-        : 'https://via.placeholder.com/150';
+    final rawImage = (court['images'] is List && court['images'].isNotEmpty)
+        ? court['images'][0] as String
+        : '';
+    final image = AppConfig.toFullImageUrl(rawImage);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(image, width: 80, height: 80, fit: BoxFit.cover,
-                    errorBuilder: (c, e, s) => Container(width: 80, height: 80, color: Colors.grey[300], child: const Icon(Icons.sports_tennis)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(courtName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      const SizedBox(height: 4),
-                      Text(date, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-                      const SizedBox(height: 4),
-                      Text(time, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(_formatCurrency(price is int ? price : int.tryParse(price.toString()) ?? 0),
-                        style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-                      child: Text(statusText, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                    if (isUpcoming) ...[
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () {
-                          final bookingId = item['_id'];
-                          if (bookingId != null) {
-                            _showCancelDialog(context, bookingId);
-                          }
-                        },
-                        child: const Text("Hủy vé", style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold)),
-                      ),
-                    ]
-                  ],
-                )
-              ],
+    return GestureDetector(
+      onTap: () {
+        final bookingId = item['_id'];
+        if (bookingId != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => BookingDetailScreen(bookingId: bookingId),
             ),
-          ),
-        ],
+          ).then((_) => _loadBookings());
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8, offset: const Offset(0, 2))],
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(image, width: 80, height: 80, fit: BoxFit.cover,
+                      errorBuilder: (c, e, s) => Container(width: 80, height: 80, color: Colors.grey[300], child: const Icon(Icons.sports_tennis)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(courtName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const SizedBox(height: 4),
+                        Text(date, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                        const SizedBox(height: 4),
+                        Text(time, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(_formatCurrency(price is int ? price : int.tryParse(price.toString()) ?? 0),
+                          style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+                        child: Text(statusText, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
+                      ),
+                      if (isUpcoming) ...[
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () {
+                            final bookingId = item['_id'];
+                            if (bookingId != null) {
+                              _showCancelDialog(context, bookingId);
+                            }
+                          },
+                          child: const Text("Hủy vé", style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ),
+                      ]
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -12,12 +12,14 @@ const TimeSlotSchema = new mongoose.Schema({
         default: 'available'
     },
     price: { type: Number, default: 50000 }, // Giá mỗi slot (30 phút)
-    booking: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', default: null }
+    booking: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', default: null },
+    lockedAt: { type: Date, default: null } // Thời gian bị lock, dùng để auto-release
 }, { timestamps: true });
 
 // Index tổ hợp để query nhanh
 TimeSlotSchema.index({ court: 1, subCourt: 1, date: 1 });
 TimeSlotSchema.index({ subCourt: 1, date: 1, status: 1 });
+TimeSlotSchema.index({ subCourt: 1, date: 1, startTime: 1 }, { unique: true }); // Ngăn duplicate slot
 
 module.exports = mongoose.model('TimeSlot', TimeSlotSchema);
 

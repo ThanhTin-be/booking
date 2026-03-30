@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'controllers/auth_controller.dart';
 import 'views/splash/splash_screen.dart';
 import 'views/auth/login_screen.dart';
 import 'views/auth/register_screen.dart';
 import 'views/auth/forgot_password_screen.dart';
 import 'views/auth/verify_code_screen.dart';
 import 'views/main_wrapper.dart';
-import 'views/admin/admin_dashboard_screen.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -40,6 +41,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Badminton Booking',
       debugShowCheckedModeBanner: false,
+      initialBinding: BindingsBuilder(() {
+        Get.put(AuthController());
+      }),
       theme: ThemeData(
         useMaterial3: true,
         textTheme: textTheme,
@@ -123,7 +127,7 @@ class MyApp extends StatelessWidget {
           page: () => VerifyCodeScreen(email: Get.arguments ?? ''),
         ),
         GetPage(name: '/home', page: () => const MainWrapper()),
-        GetPage(name: '/admin', page: () => const AdminDashboardScreen()),
+
       ],
     );
   }

@@ -1,5 +1,7 @@
+const mongoose = require('mongoose');
 const Payment = require('../models/Payment');
 const Booking = require('../models/Booking');
+const TimeSlot = require('../models/TimeSlot');
 const Wallet = require('../models/Wallet');
 const Transaction = require('../models/Transaction');
 const Notification = require('../models/Notification');
@@ -70,61 +72,98 @@ const createPayment = async (req, res) => {
     }
 };
 
-// ============ XÁC NHẬN THANH TOÁN ============
+// ============ XÁC NHẬN THANH TOÁN (cập nhật slot locked → booked) ============
 const confirmPayment = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
         const { id } = req.params; // paymentId
         const userId = req.user.id;
 
-        const payment = await Payment.findById(id);
+        const payment = await Payment.findById(id).session(session);
         if (!payment) {
+            await session.abortTransaction();
+            session.endSession();
             return res.status(404).json({ message: 'Không tìm thấy thanh toán' });
         }
 
         if (payment.status === 'completed') {
+            await session.abortTransaction();
+            session.endSession();
             return res.status(400).json({ message: 'Thanh toán đã được xác nhận trước đó' });
+        }
+
+        // Lấy booking kèm timeSlots
+        const booking = await Booking.findById(payment.booking).session(session);
+        if (!booking) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(404).json({ message: 'Không tìm thấy booking liên quan' });
         }
 
         // Nếu thanh toán bằng ví → trừ tiền ví
         if (payment.method === 'wallet') {
-            let wallet = await Wallet.findOne({ user: userId });
+            let wallet = await Wallet.findOne({ user: userId }).session(session);
             if (!wallet) {
+                await session.abortTransaction();
+                session.endSession();
                 return res.status(400).json({ message: 'Bạn chưa có ví. Vui lòng nạp tiền trước.' });
             }
             if (wallet.balance < payment.amount) {
+                await session.abortTransaction();
+                session.endSession();
                 return res.status(400).json({ message: 'Số dư ví không đủ' });
             }
 
             wallet.balance -= payment.amount;
-            await wallet.save();
+            await wallet.save({ session });
 
             // Tạo giao dịch trừ tiền
-            await Transaction.create({
+            await Transaction.create([{
                 wallet: wallet._id,
                 user: userId,
                 type: 'payment',
                 amount: -payment.amount,
                 description: `Thanh toán booking ${payment.transactionId}`,
                 relatedBooking: payment.booking
-            });
+            }], { session });
         }
 
-        // Cập nhật payment
+        // Cập nhật payment → completed
         payment.status = 'completed';
         payment.paidAt = new Date();
-        await payment.save();
+        await payment.save({ session });
 
         // Cập nhật booking status → confirmed
-        await Booking.findByIdAndUpdate(payment.booking, { status: 'confirmed' });
+        booking.status = 'confirmed';
+        await booking.save({ session });
 
-        // Tạo thông báo
-        await Notification.create({
-            user: userId,
-            title: 'Thanh toán thành công',
-            content: `Thanh toán ${formatCurrency(payment.amount)} qua ${payment.method} thành công.`,
-            type: 'payment',
-            data: { paymentId: payment._id, bookingId: payment.booking }
-        });
+        // ===== QUAN TRỌNG: Cập nhật TimeSlot từ locked → booked =====
+        if (booking.timeSlots && booking.timeSlots.length > 0) {
+            await TimeSlot.updateMany(
+                { _id: { $in: booking.timeSlots }, status: 'locked' },
+                { $set: { status: 'booked', lockedAt: null } },
+                { session }
+            );
+        }
+
+        // Commit transaction
+        await session.commitTransaction();
+        session.endSession();
+
+        // Tạo thông báo (ngoài transaction)
+        try {
+            await Notification.create({
+                user: userId,
+                title: 'Thanh toán thành công',
+                content: `Thanh toán ${formatCurrency(payment.amount)} qua ${payment.method} thành công. Khung giờ đã được xác nhận.`,
+                type: 'payment',
+                data: { paymentId: payment._id, bookingId: payment.booking }
+            });
+        } catch (notifErr) {
+            console.error('Notification error:', notifErr.message);
+        }
 
         return res.status(200).json({
             message: 'Xác nhận thanh toán thành công',
@@ -135,6 +174,8 @@ const confirmPayment = async (req, res) => {
             }
         });
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         return res.status(500).json({ message: 'Lỗi server', error: error.message });
     }
 };
@@ -215,4 +256,3 @@ module.exports = {
     generateQRCode,
     checkPaymentStatus
 };
-

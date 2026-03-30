@@ -86,6 +86,19 @@ class BookingController extends GetxController {
     }
   }
 
+  Future<Map<String, dynamic>?> fetchBookingDetail(String bookingId) async {
+    try {
+      final response = await _api.getBookingDetail(bookingId);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['booking'];
+      }
+    } catch (e) {
+      debugPrint('fetchBookingDetail error: $e');
+    }
+    return null;
+  }
+
   // ============ PAYMENTS ============
   Future<Map<String, dynamic>?> createPayment(String bookingId, String method) async {
     try {
@@ -121,6 +134,24 @@ class BookingController extends GetxController {
     return null;
   }
 
+  // ============ VNPAY ============
+  Future<String?> createVnpayPayment(String bookingId) async {
+    try {
+      final response = await _api.createVnpayPaymentUrl(bookingId);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['paymentUrl'];
+      } else {
+        final data = jsonDecode(response.body);
+        Get.snackbar('Lỗi', data['message'] ?? 'Tạo thanh toán VNPay thất bại');
+      }
+    } catch (e) {
+      debugPrint('createVnpayPayment error: $e');
+      Get.snackbar('Lỗi', 'Lỗi kết nối');
+    }
+    return null;
+  }
+
   // ============ DISCOUNT ============
   Future<Map<String, dynamic>?> applyDiscount(String code, int orderTotal) async {
     try {
@@ -135,6 +166,20 @@ class BookingController extends GetxController {
       Get.snackbar('Lỗi', 'Lỗi kết nối');
     }
     return null;
+  }
+
+  // ============ VOUCHERS ============
+  Future<List<dynamic>> fetchVouchers() async {
+    try {
+      final response = await _api.getMyVouchers();
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['vouchers'] ?? [];
+      }
+    } catch (e) {
+      debugPrint('fetchVouchers error: $e');
+    }
+    return [];
   }
 }
 

@@ -54,6 +54,25 @@ class WalletController extends GetxController {
     }
   }
 
+  Future<String?> createTopupUrl(int amount) async {
+    try {
+      isLoading.value = true;
+      final response = await _api.createVnpayTopupUrl(amount);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['paymentUrl'];
+      } else {
+        final data = jsonDecode(response.body);
+        Get.snackbar('Lỗi', data['message'] ?? 'Tạo nạp tiền thất bại');
+      }
+    } catch (e) {
+      Get.snackbar('Lỗi', 'Lỗi kết nối');
+    } finally {
+      isLoading.value = false;
+    }
+    return null;
+  }
+
   Future<void> fetchTransactions({String? type}) async {
     try {
       isLoading.value = true;

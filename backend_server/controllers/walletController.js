@@ -49,16 +49,6 @@ const topUp = async (req, res) => {
         // Cộng tiền
         wallet.balance += amount;
 
-        // Cộng điểm thưởng (1 điểm / 10.000đ nạp)
-        const earnedPoints = Math.floor(amount / 10000);
-        wallet.points += earnedPoints;
-
-        // Cập nhật tier
-        if (wallet.points >= 1000) wallet.tier = 'platinum';
-        else if (wallet.points >= 500) wallet.tier = 'gold';
-        else if (wallet.points >= 100) wallet.tier = 'silver';
-        else wallet.tier = 'member';
-
         await wallet.save();
 
         // Tạo giao dịch
@@ -76,8 +66,7 @@ const topUp = async (req, res) => {
             wallet: {
                 balance: wallet.balance,
                 points: wallet.points,
-                tier: wallet.tier,
-                earnedPoints
+                tier: wallet.tier
             }
         });
     } catch (error) {
@@ -91,8 +80,27 @@ const getTransactionHistory = async (req, res) => {
         const userId = req.user.id;
         const { type, page = 1, limit = 20 } = req.query;
 
+        // Tự động chuyển các giao dịch pending quá 15 phút thành failed
+        // (VNPay QR code chỉ có hiệu lực 15 phút)
+        const expiredTime = new Date(Date.now() - 15 * 60 * 1000);
+        await Transaction.updateMany(
+            {
+                user: userId,
+                status: 'pending',
+                createdAt: { $lt: expiredTime }
+            },
+            { $set: { status: 'failed' } }
+        );
+
         const filter = { user: userId };
-        if (type) filter.type = type; // top_up, payment, refund
+        if (type) {
+            // Khi lọc nạp tiền, bao gồm cả nạp qua VNPay
+            if (type === 'top_up') {
+                filter.type = { $in: ['top_up', 'vnpay_topup'] };
+            } else {
+                filter.type = type;
+            }
+        }
 
         const transactions = await Transaction.find(filter)
             .populate('relatedBooking', 'bookingCode')

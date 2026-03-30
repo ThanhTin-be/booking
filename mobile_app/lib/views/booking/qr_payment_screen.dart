@@ -151,7 +151,7 @@ class QRPaymentScreen extends StatelessWidget {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -160,13 +160,13 @@ class QRPaymentScreen extends StatelessWidget {
             const SizedBox(height: 20),
             const Text("Thanh toán thành công!", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            const Text("Hệ thống đã nhận được thanh toán của bạn.", textAlign: TextAlign.center),
+            const Text("Hệ thống đã nhận được thanh toán của bạn. Khung giờ đã được xác nhận.", textAlign: TextAlign.center),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
+                  Navigator.of(ctx).pushNamedAndRemoveUntil('/home', (route) => false);
                 },
                 child: const Text("VỀ TRANG CHỦ"),
               ),

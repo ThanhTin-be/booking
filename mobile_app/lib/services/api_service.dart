@@ -143,6 +143,17 @@ class ApiService {
     return get('/wallet/transactions', queryParams: params);
   }
 
+  // ============ VNPAY ============
+
+  Future<http.Response> createVnpayPaymentUrl(String bookingId) =>
+      post('/vnpay/create-payment-url', body: {'bookingId': bookingId});
+
+  Future<http.Response> createVnpayTopupUrl(int amount) =>
+      post('/vnpay/create-topup-url', body: {'amount': amount});
+
+  Future<http.Response> processVnpayReturn(Map<String, String> vnpParams) =>
+      post('/vnpay/process-return', body: vnpParams);
+
   // ============ WISHLIST ============
 
   Future<http.Response> getWishlist() => get('/wishlist');

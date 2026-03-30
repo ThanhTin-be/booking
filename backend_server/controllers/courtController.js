@@ -156,7 +156,7 @@ const getTimeSlots = async (req, res) => {
         const subCourts = await SubCourt.find({ court: id, status: 'active' }).sort({ name: 1 });
 
         // Lấy tất cả slots cho ngày đó
-        const timeSlots = await TimeSlot.find({ court: id, date })
+        let timeSlots = await TimeSlot.find({ court: id, date })
             .populate('subCourt', 'name')
             .sort({ subCourt: 1, startTime: 1 });
 
@@ -182,16 +182,25 @@ const getTimeSlots = async (req, res) => {
             await TimeSlot.insertMany(defaultSlots);
 
             // Query lại
-            const newSlots = await TimeSlot.find({ court: id, date })
+            timeSlots = await TimeSlot.find({ court: id, date })
                 .populate('subCourt', 'name')
                 .sort({ subCourt: 1, startTime: 1 });
+        }
 
-            return res.status(200).json({
-                message: 'Lấy slot giờ thành công (đã tự tạo)',
-                court: { id: court._id, name: court.name },
-                subCourts,
-                timeSlots: newSlots,
-                date
+        // Đánh dấu slot đã qua giờ hiện tại (chỉ cho ngày hôm nay)
+        const vnOptions = { timeZone: 'Asia/Ho_Chi_Minh' };
+        const todayStr = new Date().toLocaleDateString('sv-SE', vnOptions); // "YYYY-MM-DD"
+        let slotsResponse = timeSlots;
+
+        if (date === todayStr) {
+            const nowTime = new Date().toLocaleTimeString('en-GB', { ...vnOptions, hour: '2-digit', minute: '2-digit', hour12: false }); // "HH:mm"
+            slotsResponse = timeSlots.map(slot => {
+                const slotObj = slot.toObject();
+                // Slot đã qua giờ và đang available → đánh dấu expired
+                if (slotObj.startTime <= nowTime && slotObj.status === 'available') {
+                    slotObj.status = 'expired';
+                }
+                return slotObj;
             });
         }
 
@@ -199,7 +208,7 @@ const getTimeSlots = async (req, res) => {
             message: 'Lấy slot giờ thành công',
             court: { id: court._id, name: court.name },
             subCourts,
-            timeSlots,
+            timeSlots: slotsResponse,
             date
         });
     } catch (error) {

@@ -6,7 +6,7 @@ const PaymentSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
     method: {
         type: String,
-        enum: ['cash', 'bank', 'momo', 'wallet'],
+        enum: ['cash', 'bank', 'momo', 'wallet', 'vnpay'],
         default: 'cash'
     },
     status: {
@@ -16,6 +16,7 @@ const PaymentSchema = new mongoose.Schema({
     },
     transactionId: { type: String, default: null }, // Mã giao dịch bên ngoài
     qrCodeData: { type: String, default: null },     // Dữ liệu QR
+    vnpTransactionNo: { type: String, default: null }, // Mã giao dịch VNPay trả về
     paidAt: { type: Date, default: null }
 }, { timestamps: true });
 

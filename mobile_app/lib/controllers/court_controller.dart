@@ -7,6 +7,7 @@ class CourtController extends GetxController {
   final ApiService _api = ApiService();
 
   var isLoading = false.obs;
+  var isSearching = false.obs;
   var courts = <dynamic>[].obs;
   var searchResults = <dynamic>[].obs;
 
@@ -33,10 +34,12 @@ class CourtController extends GetxController {
 
   Future<void> searchCourts(String keyword) async {
     if (keyword.trim().isEmpty) {
+      isSearching.value = false;
       searchResults.clear();
       return;
     }
     try {
+      isSearching.value = true;
       final response = await _api.searchCourts(keyword);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

@@ -28,7 +28,7 @@ const seedUsers = async () => {
                 password: hashedPassword,
                 role: 'admin',
                 phone: '0123456789',
-                avatar: 'https://via.placeholder.com/150'
+                avatar: ''
             },
             {
                 fullName: 'Nguyễn Văn A',
@@ -36,7 +36,7 @@ const seedUsers = async () => {
                 password: hashedPassword,
                 role: 'customer',
                 phone: '0987654321',
-                avatar: 'https://via.placeholder.com/150'
+                avatar: ''
             },
             {
                 fullName: 'Trần Thị B',
@@ -44,7 +44,7 @@ const seedUsers = async () => {
                 password: hashedPassword,
                 role: 'customer',
                 phone: '0912345678',
-                avatar: 'https://via.placeholder.com/150'
+                avatar: ''
             }
         ];
 

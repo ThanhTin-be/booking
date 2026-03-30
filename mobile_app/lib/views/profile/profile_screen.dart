@@ -16,6 +16,24 @@ class ProfileScreen extends StatelessWidget {
   String _formatCurrency(int amount) =>
       "${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}đ";
 
+  String _tierLabel(String tier) {
+    switch (tier) {
+      case 'platinum': return 'Platinum';
+      case 'gold': return 'Gold';
+      case 'silver': return 'Silver';
+      default: return 'Member';
+    }
+  }
+
+  Color _tierColor(String tier) {
+    switch (tier) {
+      case 'platinum': return const Color(0xFF7C3AED);
+      case 'gold': return const Color(0xFFD97706);
+      case 'silver': return const Color(0xFF2563EB);
+      default: return const Color(0xFF6B7280);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
@@ -24,6 +42,11 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FE),
       body: Obx(() {
+        // Nếu chưa đăng nhập → hiện giao diện khách
+        if (!authController.isLoggedIn) {
+          return _buildGuestView(context);
+        }
+
         final user = authController.user;
         return SingleChildScrollView(
           child: Column(
@@ -156,8 +179,8 @@ class ProfileScreen extends StatelessWidget {
                           _buildDivider(),
                           _buildStatItem(
                             "Hạng",
-                            user['role'] == 'admin' ? 'Admin' : 'VIP',
-                            Colors.amber[700]!,
+                            _tierLabel(walletController.tier.value),
+                            _tierColor(walletController.tier.value),
                             Icons.workspace_premium_rounded,
                           ),
                         ],
@@ -263,6 +286,212 @@ class ProfileScreen extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+
+  /// Giao diện khi chưa đăng nhập
+  Widget _buildGuestView(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Header gradient
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 40,
+              bottom: 50,
+            ),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1E56D9), Color(0xFF00C2FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Column(
+              children: [
+                // Guest avatar
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                  child: Obx(() => CircleAvatar(
+                    radius: 44,
+                    backgroundColor: Colors.white24,
+                    backgroundImage: Get.find<AuthController>().guestAvatar.value.isNotEmpty
+                        ? NetworkImage(Get.find<AuthController>().avatarUrl)
+                        : null,
+                    child: Get.find<AuthController>().guestAvatar.value.isEmpty
+                        ? const Icon(Icons.person_rounded, size: 48, color: Colors.white)
+                        : null,
+                  )),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  "Chào bạn!",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  "Đăng nhập để trải nghiệm đầy đủ",
+                  style: GoogleFonts.poppins(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Login / Register buttons
+          Transform.translate(
+            offset: const Offset(0, -24),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Login button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF1E56D9), Color(0xFF42A5F5)],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF1E56D9).withOpacity(0.35),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton.icon(
+                          onPressed: () => Get.toNamed('/login'),
+                          icon: const Icon(Icons.login_rounded, color: Colors.white, size: 20),
+                          label: Text(
+                            "ĐĂNG NHẬP",
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Register button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: OutlinedButton.icon(
+                        onPressed: () => Get.toNamed('/register'),
+                        icon: Icon(Icons.person_add_rounded, color: const Color(0xFF1E56D9), size: 20),
+                        label: Text(
+                          "ĐĂNG KÝ TÀI KHOẢN",
+                          style: GoogleFonts.poppins(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1E56D9),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: const Color(0xFF1E56D9).withOpacity(0.3), width: 1.5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Features preview
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Đăng nhập để:",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[800],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildFeatureItem(Icons.confirmation_number_rounded, "Đặt sân và quản lý vé"),
+                _buildFeatureItem(Icons.account_balance_wallet_rounded, "Quản lý ví & thanh toán"),
+                _buildFeatureItem(Icons.card_giftcard_rounded, "Nhận ưu đãi & voucher"),
+                _buildFeatureItem(Icons.favorite_rounded, "Lưu sân yêu thích"),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E56D9).withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFF1E56D9), size: 20),
+          ),
+          const SizedBox(width: 14),
+          Text(
+            text,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

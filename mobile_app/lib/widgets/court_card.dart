@@ -12,6 +12,7 @@ class CourtCard extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onTap;
   final VoidCallback onBookingTap;
+  final VoidCallback? onFavoriteTap;
 
   const CourtCard({
     super.key,
@@ -23,6 +24,7 @@ class CourtCard extends StatelessWidget {
     required this.logoUrl,
     this.tags = const [],
     this.isFavorite = false,
+    this.onFavoriteTap,
     required this.onTap,
     required this.onBookingTap,
   });
@@ -151,7 +153,7 @@ class CourtCard extends StatelessWidget {
                       _CircleBtn(
                         icon: isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                         color: isFavorite ? Colors.redAccent : Colors.black54,
-                        onTap: () {},
+                        onTap: () => onFavoriteTap?.call(),
                       ),
                       const SizedBox(width: 8),
                       _CircleBtn(

@@ -8,7 +8,7 @@ import '../../widgets/gradient_button.dart';
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  final AuthController _authController = Get.put(AuthController());
+  final AuthController _authController = Get.find<AuthController>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -137,21 +137,71 @@ class LoginScreen extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
-                  // Admin button
-                  OutlinedButton.icon(
-                    onPressed: () => Get.toNamed('/admin'),
-                    icon: const Icon(Icons.admin_panel_settings_outlined, size: 20),
-                    label: Text(
-                      "Truy cập quyền Quản trị viên",
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                    ),
+                  // Google Sign-In button
+                  Obx(() => OutlinedButton(
+                    onPressed: _authController.isLoading.value
+                        ? null
+                        : () => _authController.loginWithGoogle(),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF1E56D9),
-                      side: const BorderSide(color: Color(0xFF1E56D9), width: 1.5),
+                      foregroundColor: Colors.black87,
+                      side: const BorderSide(color: Color(0xFFDDDDDD), width: 1.5),
                       minimumSize: const Size(double.infinity, 52),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      backgroundColor: Colors.white,
                     ),
-                  ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.network(
+                          'https://www.google.com/favicon.ico',
+                          width: 20,
+                          height: 20,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.g_mobiledata, size: 24, color: Colors.red),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Đăng nhập bằng Google",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+
+                  const SizedBox(height: 12),
+
+                  // Facebook Sign-In button
+                  Obx(() => OutlinedButton(
+                    onPressed: _authController.isLoading.value
+                        ? null
+                        : () => _authController.loginWithFacebook(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Color(0xFF1877F2), width: 1.5),
+                      minimumSize: const Size(double.infinity, 52),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      backgroundColor: const Color(0xFF1877F2),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.facebook, size: 24, color: Colors.white),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Đăng nhập bằng Facebook",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+
 
                   const SizedBox(height: 28),
 

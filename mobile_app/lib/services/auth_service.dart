@@ -32,6 +32,40 @@ class AuthService {
     return response;
   }
 
+  Future<http.Response> googleLogin(String idToken) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/google'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'idToken': idToken,
+      }),
+    );
+    return response;
+  }
+
+  Future<http.Response> facebookLogin(String accessToken) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/facebook'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'accessToken': accessToken,
+      }),
+    );
+    return response;
+  }
+
+  Future<http.Response> facebookLoginWithCode(String code, String redirectUri) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/facebook'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'code': code,
+        'redirectUri': redirectUri,
+      }),
+    );
+    return response;
+  }
+
   Future<http.Response> verifyEmail(String email, String code) async {
     final response = await http.post(
       Uri.parse('$baseUrl/verify-email'),
@@ -73,6 +107,14 @@ class AuthService {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
+    );
+    return response;
+  }
+
+  Future<http.Response> getRandomAvatar() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/random-avatar'),
+      headers: {'Content-Type': 'application/json'},
     );
     return response;
   }
