@@ -29,6 +29,23 @@ class BookingController extends GetxController {
     }
   }
 
+  /// Giữ slot tạm thời khi vào trang xác nhận (trước khi tạo booking)
+  Future<bool> holdSlots(List<String> timeSlotIds) async {
+    try {
+      final response = await _api.holdSlots(timeSlotIds);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        Get.snackbar('Không thể giữ sân', data['message'] ?? 'Khung giờ đã được đặt hoặc đang giữ');
+        return false;
+      }
+    } catch (e) {
+      Get.snackbar('Lỗi', 'Lỗi kết nối');
+      return false;
+    }
+  }
+
   Future<Map<String, dynamic>?> createBooking({
     required String courtId,
     String? subCourtId,

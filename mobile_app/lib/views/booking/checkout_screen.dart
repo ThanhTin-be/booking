@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -46,6 +47,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   int _discountAmount = 0;
   String _appliedVoucherCode = '';
   bool _isSubmitting = false;
+  bool _isHolding = true; // Đang gọi API hold
+  bool _holdFailed = false;
+
+  // Countdown timer 15 phút
+  static const int _holdDurationSeconds = 15 * 60;
+  int _remainingSeconds = _holdDurationSeconds;
+  Timer? _countdownTimer;
 
   @override
   void initState() {
@@ -54,6 +62,70 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _nameController.text = user['fullName'] ?? '';
     _phoneController.text = user['phone'] ?? '';
     _walletController.fetchBalance();
+    _holdSlotsAndStartTimer();
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _holdSlotsAndStartTimer() async {
+    final success = await _bookingController.holdSlots(widget.selectedSlotIds);
+    if (!mounted) return;
+    if (success) {
+      setState(() => _isHolding = false);
+      _startCountdown();
+    } else {
+      setState(() {
+        _isHolding = false;
+        _holdFailed = true;
+      });
+      // Show dialog rồi pop về
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Row(children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange[700], size: 28),
+            const SizedBox(width: 8),
+            const Expanded(child: Text('Không thể giữ sân')),
+          ]),
+          content: const Text('Một hoặc nhiều khung giờ bạn chọn đã được người khác đặt hoặc đang giữ. Vui lòng chọn lại.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Quay lại chọn sân'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _startCountdown() {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) { timer.cancel(); return; }
+      setState(() => _remainingSeconds--);
+      if (_remainingSeconds <= 0) {
+        timer.cancel();
+        if (mounted) {
+          Get.snackbar('Hết thời gian', 'Thời gian giữ sân đã hết. Vui lòng chọn lại.');
+          Navigator.of(context).pop();
+        }
+      }
+    });
+  }
+
+  String get _countdownText {
+    final minutes = _remainingSeconds ~/ 60;
+    final seconds = _remainingSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   int get _finalPrice => (widget.totalPrice - _discountAmount).clamp(0, widget.totalPrice);
@@ -195,9 +267,61 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         title: Text("Xác nhận đặt sân", style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.black87)),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: _isHolding
+        ? const Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            CircularProgressIndicator(color: Color(0xFF1E56D9)),
+            SizedBox(height: 16),
+            Text('Đang giữ sân cho bạn...', style: TextStyle(fontSize: 15, color: Colors.grey)),
+          ]))
+        : _holdFailed
+          ? const SizedBox.shrink()
+          : SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
         child: Column(children: [
+          // ─── COUNTDOWN TIMER BANNER ───
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: _remainingSeconds <= 120
+                    ? [const Color(0xFFFF5252), const Color(0xFFFF8A80)]
+                    : _remainingSeconds <= 300
+                        ? [const Color(0xFFFFA726), const Color(0xFFFFCC80)]
+                        : [const Color(0xFF1E56D9), const Color(0xFF42A5F5)],
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(children: [
+              Icon(
+                _remainingSeconds <= 120 ? Icons.timer_off_rounded : Icons.timer_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Sân đang được giữ cho bạn',
+                  style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.25),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _countdownText,
+                  style: GoogleFonts.jetBrainsMono(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ]),
+          ),
+          const SizedBox(height: 12),
           // ─── 1. THÔNG TIN SÂN ĐẶT ───
           _buildCard(
             icon: Icons.sports_tennis_rounded, iconColor: const Color(0xFF1E56D9),

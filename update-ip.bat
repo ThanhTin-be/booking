@@ -66,6 +66,11 @@ if defined NGROK_URL (
     
     echo [OK] Da cap nhat backend_server\.env:
     echo      NGROK_URL=%NGROK_URL%
+
+    REM Upload ngrok URL len Gist
+    REM Vui long tao file .env hoac dat bien moi truong cho GIST_ID va GITHUB_TOKEN xuyen suot
+    powershell -Command "$body = @{files=@{'ngrok-url.txt'=@{content='%NGROK_URL%'}}} | ConvertTo-Json -Depth 5; Invoke-RestMethod -Uri 'https://api.github.com/gists/YOUR_GIST_ID' -Method Patch -Headers @{Authorization='token YOUR_GITHUB_TOKEN'} -ContentType 'application/json' -Body $body"
+    echo [OK] Da upload ngrok URL len Gist
 ) else (
     echo [WARN] Khong phat hien Ngrok dang chay.
     echo        Neu can VNPay callback, hay chay: ngrok http 3000

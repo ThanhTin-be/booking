@@ -87,6 +87,9 @@ class ApiService {
 
   // ============ BOOKINGS ============
 
+  Future<http.Response> holdSlots(List<String> timeSlotIds) =>
+      post('/bookings/hold', body: {'timeSlotIds': timeSlotIds});
+
   Future<http.Response> createBooking({
     required String courtId,
     String? subCourtId,

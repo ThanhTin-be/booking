@@ -16,6 +16,69 @@ async function generateBookingCode() {
     return `BK${lastNumber + 1}`;
 }
 
+// ============ GIỮ SLOT TẠM THỜI (khi vào trang xác nhận) ============
+const holdSlots = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const { timeSlotIds } = req.body;
+
+        if (!timeSlotIds || timeSlotIds.length === 0) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).json({ message: 'Vui lòng chọn ít nhất 1 khung giờ' });
+        }
+
+        // ===== Kiểm tra khung giờ đã qua (chỉ cho ngày hôm nay) =====
+        const vnOptions = { timeZone: 'Asia/Ho_Chi_Minh' };
+        const todayStr = new Date().toLocaleDateString('sv-SE', vnOptions);
+        const nowTime = new Date().toLocaleTimeString('en-GB', { ...vnOptions, hour: '2-digit', minute: '2-digit', hour12: false });
+
+        const slotsToCheck = await TimeSlot.find({ _id: { $in: timeSlotIds } }).session(session);
+        const pastSlot = slotsToCheck.find(s => s.date === todayStr && s.startTime <= nowTime);
+        if (pastSlot) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).json({ message: 'Khung giờ đã qua, vui lòng chọn khung giờ khác.' });
+        }
+
+        // ===== ATOMIC LOCK: chỉ lock slot có status = 'available' =====
+        const lockedSlots = [];
+        for (const slotId of timeSlotIds) {
+            const lockedSlot = await TimeSlot.findOneAndUpdate(
+                { _id: slotId, status: 'available' },
+                { $set: { status: 'locked', lockedAt: new Date() } },
+                { new: true, session }
+            );
+
+            if (!lockedSlot) {
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(409).json({
+                    message: 'Một hoặc nhiều khung giờ đã được đặt hoặc đang được giữ. Vui lòng chọn lại.'
+                });
+            }
+            lockedSlots.push(lockedSlot);
+        }
+
+        await session.commitTransaction();
+        session.endSession();
+
+        console.log(`[HoldSlots] User ${req.user.id} đã giữ ${lockedSlots.length} slot`);
+
+        return res.status(200).json({
+            message: 'Đã giữ khung giờ thành công. Vui lòng thanh toán trong 15 phút.',
+            lockedSlotIds: lockedSlots.map(s => s._id),
+            expiresInMinutes: 15
+        });
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        return res.status(500).json({ message: 'Lỗi server', error: error.message });
+    }
+};
+
 // ============ TẠO ĐƠN ĐẶT SÂN (có Transaction chống race condition) ============
 const createBooking = async (req, res) => {
     const session = await mongoose.startSession();
@@ -64,17 +127,25 @@ const createBooking = async (req, res) => {
         }
 
         // ===== ATOMIC LOCK: Dùng findOneAndUpdate để lock từng slot =====
-        // Chỉ lock được slot có status = 'available'
+        // Chấp nhận slot 'available' hoặc đã 'locked' (pre-held từ holdSlots)
         const lockedSlots = [];
         for (const slotId of timeSlotIds) {
-            const lockedSlot = await TimeSlot.findOneAndUpdate(
+            // Thử lock slot available trước
+            let lockedSlot = await TimeSlot.findOneAndUpdate(
                 { _id: slotId, status: 'available' },
                 { $set: { status: 'locked', lockedAt: new Date() } },
                 { new: true, session }
             );
 
             if (!lockedSlot) {
-                // Slot đã bị đặt/khóa bởi người khác → rollback tất cả
+                // Nếu slot đã locked (pre-held), vẫn chấp nhận
+                lockedSlot = await TimeSlot.findOne(
+                    { _id: slotId, status: 'locked' }
+                ).session(session);
+            }
+
+            if (!lockedSlot) {
+                // Slot đã bị booked bởi người khác → rollback tất cả
                 await session.abortTransaction();
                 session.endSession();
                 return res.status(409).json({
@@ -354,6 +425,7 @@ const cancelBooking = async (req, res) => {
 };
 
 module.exports = {
+    holdSlots,
     createBooking,
     getMyBookings,
     getBookingDetail,
